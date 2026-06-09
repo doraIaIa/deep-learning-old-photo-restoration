@@ -68,6 +68,17 @@ python scripts/run_gradio_demo.py
 Sau đó upload ảnh và chạy auto-mask pipeline. Output sẽ nằm trong `examples/outputs/gradio_runs/`.
 Thư mục `examples/outputs/` đang bị gitignore.
 
+## Deployment / Docker Skeleton
+
+- Repo đã có `Dockerfile` và `docker-compose.yml`
+- Skeleton này không self-contained weights hoặc external model runtime
+- Xem thêm `docs/deployment.md`
+- Lệnh nhanh:
+
+```bash
+docker compose up --build
+```
+
 ## Run Mask-Bypass Smoke
 
 ```bash
