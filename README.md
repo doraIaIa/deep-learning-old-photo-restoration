@@ -52,6 +52,22 @@ a63381ade991cb936e2262e80fa6001c3a1fe9d10b1075be0d3c7f617c0a5725
 python scripts/check_readiness.py
 ```
 
+## Run Local Gradio Demo
+
+```bash
+python scripts/check_readiness.py
+python app/gradio_demo.py
+```
+
+Hoặc:
+
+```bash
+python scripts/run_gradio_demo.py
+```
+
+Sau đó upload ảnh và chạy auto-mask pipeline. Output sẽ nằm trong `examples/outputs/gradio_runs/`.
+Thư mục `examples/outputs/` đang bị gitignore.
+
 ## Run Mask-Bypass Smoke
 
 ```bash
