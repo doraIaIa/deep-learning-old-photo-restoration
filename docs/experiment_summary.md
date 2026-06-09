@@ -2,22 +2,23 @@
 
 Repo submission không mang toàn bộ lịch sử thí nghiệm của repo research. Tài liệu này chỉ giữ các kết quả cần cho reproducibility của submission.
 
-## Phase 2 Demo3 Result
-
-Golden regression case hiện tại là `demo3`, không phải benchmark toàn bộ dataset.
+## Core Metrics
 
 - `final_mask_ratio`: `0.0979878066233506`
 - `final_mask IoU vs golden`: `0.9997728216844948`
 - restored `MAE vs golden`: `0.008635014295578003`
 - restored `PSNR vs golden`: `66.63675683358014`
 
-## Phase 1C Regression
+## Phase Evidence
 
-- mask-bypass regression `MAE = 0`
-- `max_diff = 0`
-- `PSNR = inf`
+| Phase | Feature | Evidence | Metrics |
+| --- | --- | --- | --- |
+| 1C | Mask-bypass regression | `scripts/run_pipeline.py --mask ...` | `MAE = 0`, `PSNR = inf` |
+| 2 | Auto-mask pipeline | golden demo3 comparison | `IoU = 0.99977`, `PSNR = 66.64` |
+| 3B | Gradio local demo | import/launch smoke pass | UI import pass, launch pass |
+| 3C | Docker skeleton | `docker compose config` pass | compose parse/config pass |
 
 ## Ghi Chú
 
 - Checkpoint r013 không nằm trong Git, chỉ tồn tại local.
-- Kết quả trên dùng demo3 làm golden case để kiểm tra hồi quy và khả năng tái lập.
+- `demo3` là golden case phục vụ hồi quy và trình diễn, không phải benchmark toàn bộ dataset.
