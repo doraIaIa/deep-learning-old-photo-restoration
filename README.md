@@ -12,13 +12,13 @@
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.6-ee4c2c?style=for-the-badge&logo=pytorch&logoColor=white)](https://pytorch.org/)
 [![CUDA](https://img.shields.io/badge/CUDA-12.4-76b900?style=for-the-badge&logo=nvidia&logoColor=white)](https://developer.nvidia.com/cuda-toolkit)
 [![Gradio](https://img.shields.io/badge/Demo-Gradio-f97316?style=for-the-badge)](http://127.0.0.1:7860)
-[![Docker](https://img.shields.io/badge/Deploy-Docker%20Template-2496ed?style=for-the-badge&logo=docker&logoColor=white)](#docker--deployment)
+[![Docker](https://img.shields.io/badge/Deploy-Docker%20Template-2496ed?style=for-the-badge&logo=docker&logoColor=white)](docs/deployment.md)
 
 <br>
 
 <img src="docs/assets/demo3/contact_sheet.png" alt="Old Photo Restoration Demo" width="930"/>
 
-`<sub><b>`Input photo `</b>` &nbsp;→&nbsp; `<b>`Predicted repair mask `</b>` &nbsp;→&nbsp; `<b>`LaMa restored output `</b></sub>`
+<sub><b>Input photo</b> &nbsp;→&nbsp; <b>Predicted repair mask</b> &nbsp;→&nbsp; <b>LaMa restored output</b></sub>
 
 </div>
 
@@ -75,9 +75,9 @@ Kiến trúc pipeline ưu tiên tính minh bạch bằng cách xuất ra các k�
 ## 3. Điểm nổi bật của repo
 
 - **Phân vùng vùng hư hại**: Sử dụng mô hình U-Net kết hợp Attention Gate (`CrackSegmenter`) để tập trung feature vào vùng hư hỏng, bỏ qua background nhiễu.
-- **Tinh chỉnh mặt nạ lai**: Kết hợp dự đoán của Deep Learning với phương pháp Classical CV để tránh bỏ sót các nét nứt mảnh, tạo ra mặt nạ phân vùng (segmentation mask) chính xác.
+- **Tinh chỉnh mặt nạ lai**: Kết hợp dự đoán của Deep Learning với phương pháp Classical CV để tránh bỏ sót các nét nứt mảnh, tạo ra mặt nạ phân vùng (segmentation mask) phù hợp hơn cho bước inpainting.
 - **Điền khuyết ảnh**: Gọi LaMa thông qua external inpainting backend để tái tạo hình ảnh từ mask một cách tự nhiên.
-- **Tập trung quan sát**: Mọi khâu đều lưu lại các file trung gian (`dl_mask.png`, `cv_mask.png`, `union_before_refine.png`, `final_mask.png`), phục vụ việc chuẩn đoán lỗi dễ dàng.
+- **Tập trung quan sát**: Mọi khâu đều lưu lại các file trung gian (`dl_mask.png`, `cv_mask.png`, `union_before_refine.png`, `final_mask.png`), phục vụ việc chẩn đoán lỗi dễ dàng.
 
 ---
 
@@ -132,7 +132,7 @@ Checkpoint binaries are not committed to Git. They must be supplied locally or t
 
 ### Training summary
 
-R013 được fine-tune từ R011 trên một tập dữ liệu nhỏ gồm **118 valid image-mask pairs**.
+Mô hình segmentation R013 được fine-tune từ R011 trên một tập dữ liệu nhỏ gồm **118 valid image-mask pairs**.
 
 | Metric    | R011 baseline | R013 selected checkpoint |
 | --------- | ------------: | -----------------------: |
