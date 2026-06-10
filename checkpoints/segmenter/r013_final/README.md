@@ -1,12 +1,3 @@
-# R013 Final Segmenter Checkpoint
+# r013_final
 
-This directory is the intended public-facing location for the current final Module 1 segmenter checkpoint.
-
-Expected binary name:
-
-- `best_iou.ckpt` as a normalized public-facing name
-- local workspaces may still use the current manifest path until the binary is explicitly relocated outside Git
-
-The checkpoint binary is not committed to the repository. Use `artifacts/manifests/checkpoints_manifest.csv` to verify the expected SHA256, local policy, and external source-of-truth.
-
-This directory documents Module 1 checkpoint placement only and does not imply a full pipeline checkpoint.
+This directory is a human-readable metadata alias for the selected R013 operational checkpoint. The canonical run folder is seg-unet-attn-r013-gen120-fixed118-local/. No checkpoint binary is committed here. The term 'selected' should be used in prose instead of claiming absolute finality.
