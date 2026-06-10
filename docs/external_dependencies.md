@@ -2,33 +2,30 @@
 
 ## LaMa
 
-Repo submission không vendor official LaMa vào GitHub. Pipeline gọi LaMa qua đường dẫn external lấy từ `configs/external_paths.yaml`.
+Repo submission không vendor official LaMa vào cây source. Pipeline gọi LaMa qua wrapper/external runtime.
 
-- `repo_root`: thư mục source LaMa
-- `checkpoint`: Big-LaMa `best.ckpt`
-- `conda_env_preferred`: environment GPU ưu tiên
-- `conda_env_fallback`: environment CPU fallback
+- Đây là official/pretrained integration.
+- Không claim LaMa đã fine-tune trong repo submission này.
+- `configs/external_paths.example.yaml` chỉ là template.
+- `configs/external_paths.yaml` là file local theo máy và không nên commit.
 
-`configs/external_paths.example.yaml` chỉ là template. `configs/external_paths.yaml` là file local theo máy và đã bị ignore trong Git.
+## Checkpoint Policy
+
+- Checkpoint segmentation không commit vào Git theo mặc định.
+- Artifact tham chiếu ngoài repo cho `R013_REPRO`:
+  `F:\deeplearning\experiment_value\module1_retrain_sequence\R013_REPRO\best_iou.ckpt`
+- SHA256:
+  `5f3b340e38eba8290d2b8ca030bb51126308169f4e42087f46ddac0334e74203`
 
 ## CodeFormer
 
-CodeFormer là dependency optional. Repo submission không commit source hoặc weights của CodeFormer.
+- CodeFormer là dependency optional.
+- Trong repo submission hiện tại, Module 3 không nên được mô tả như một capability end-to-end đã hoàn chỉnh.
+- Nếu có demo qualitative ở ngữ cảnh khác, chỉ nên mô tả ở mức qualitative hoặc prototype.
+- Không claim identity preservation.
 
-- `repo_root`: thư mục source CodeFormer
-- `checkpoint`: weight CodeFormer
-- `conda_env`: environment riêng nếu cần
+## Vì Sao Không Commit External Dependencies
 
-Trong trạng thái pipeline hiện tại, face restoration chưa phải core requirement của readiness check.
-
-## sitecustomize.py
-
-Repo hiện chưa dùng editable install. [sitecustomize.py](/f:/deeplearning/old_photo_restoration_blueprint21_submission/sitecustomize.py:1) giúp Python resolve `src/` khi chạy script trực tiếp từ repo root.
-
-Đây là giải pháp tạm gọn cho submission. Cách chuẩn hơn về sau là dùng `pip install -e .`.
-
-## Vì Sao Không Commit Dependencies Này
-
-- Checkpoint và weights lớn, không phù hợp để đưa vào Git submission.
-- Tách dependency runtime khỏi repo giúp repo nhẹ và rõ ràng hơn cho người chấm.
-- Các path tuyệt đối chỉ nên nằm trong config local, không hard-code trong source.
+- Giữ repo submission nhẹ và dễ review.
+- Tránh hard-code path local trong source tree.
+- Tách source code khỏi weights, runtime và artifact research.
