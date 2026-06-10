@@ -48,7 +48,7 @@ This project repository does not bundle the full research history. This document
 ## Moved to Future Work
 
 - LaMa fine-tuning.
-- LPIPS/FID/masked-region LPIPS evaluation. (Future evaluation protocol / not claimed)
+- LPIPS/FID/masked-region LPIPS evaluation (planned for future work, not currently claimed).
 - Full end-to-end quantitative evaluation.
 - A complete Module 3 face restoration flow.
 

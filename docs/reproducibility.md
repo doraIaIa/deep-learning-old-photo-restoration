@@ -85,7 +85,7 @@ Expected smoke/regression behavior:
 ## Evaluation Boundary
 
 - `demo3` can be reused for smoke/regression checks.
-- README and docs should not be interpreted as evidence that LPIPS/FID or full end-to-end evaluation has been completed. (Future evaluation protocol / not claimed)
+- README and docs should not be interpreted as evidence that LPIPS/FID or full end-to-end evaluation has been completed.
 - The strongest quantitative evidence currently remains the Module 1 segmentation metrics.
 
 ## Known Boundaries

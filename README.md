@@ -58,7 +58,7 @@ This repository does not attempt to retell the entire research history. Claims i
 ## What Is Future Work
 
 - LaMa fine-tuning with complete training artifacts.
-- LPIPS, FID, and masked-region LPIPS. (Future evaluation protocol / not claimed)
+- LPIPS, FID, and masked-region LPIPS (planned future evaluation protocols, not currently claimed).
 - Full end-to-end quantitative evaluation for the entire pipeline.
 - A complete Module 3 face restoration flow.
 - Identity-preservation metrics for face restoration.

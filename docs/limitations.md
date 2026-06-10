@@ -14,7 +14,7 @@ The current pipeline focuses on:
 - LaMa fine-tuning.
 - `LPIPS`, `FID`, and `masked-region LPIPS`. (Future evaluation protocol / not claimed)
 - Full quantitative end-to-end evaluation.
-- CodeFormer identity preservation. (Future evaluation protocol / not claimed)
+- CodeFormer identity preservation (not guaranteed).
 - A complete Module 3 face restoration flow.
 - Illumination handling as a completed implementation in the current repository.
 
@@ -27,7 +27,7 @@ The current pipeline focuses on:
 ## Future Work
 
 - LaMa fine-tuning with complete artifacts.
-- LPIPS/FID/masked-region LPIPS. (Future evaluation protocol / not claimed)
+- LPIPS/FID/masked-region LPIPS (future evaluation protocols, not currently claimed).
 - A stronger end-to-end Module 3 flow.
 - A more complete evaluation protocol beyond smoke/regression checks.
 
