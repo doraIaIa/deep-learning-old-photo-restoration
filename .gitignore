@@ -34,3 +34,6 @@ checkpoints/segmenter/r009_synthetic_pretrain/*
 configs/external_paths.yaml
 examples/outputs/*
 !examples/outputs/.gitkeep
+
+!outputs/project_evolution/
+!outputs/project_evolution/**
