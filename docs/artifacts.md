@@ -1,5 +1,11 @@
 # Artifact Packaging
 
+> **Tóm tắt tiếng Việt**
+> 
+> - Tài liệu này giải thích cách đóng gói minh chứng đầu ra (artifact packaging).
+> - Mô tả lý do tại sao dataset và checkpoint weights không được commit trực tiếp vào Git.
+> - Các phép đo mở rộng trong tương lai chỉ mang tính chất tham khảo, không đại diện cho kết quả hiện tại.
+
 This document explains how the repository packages artifact evidence without turning the source tree into a storage location for checkpoints, research datasets, or large runtime outputs.
 
 ## Module 1 checkpoint lineage
@@ -72,7 +78,7 @@ python -B scripts/verify_artifacts.py check-all --repo-root .
 - The repository does not auto-copy datasets.
 - The repository does not package full automatic training reproduction.
 - The repository does not claim LaMa fine-tuning.
-- The repository does not claim completed LPIPS/FID coverage unless matching artifacts are added later.
+- LPIPS/FID are not claimed for this artifact.
 
 ### Segmenter Checkpoints (R006-R013)
 The segmenter checkpoints follow canonical experiment-run names (e.g., seg-unet-attn-r013-gen120-fixed118-local) to precisely map to historical logs and metrics.

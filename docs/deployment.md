@@ -1,5 +1,11 @@
 # Deployment
 
+> **Tóm tắt tiếng Việt**
+> 
+> - Tài liệu này cung cấp hướng dẫn khởi chạy nhanh (deployment skeleton) thông qua Docker hoặc Local cho mục đích demo.
+> - Image không đóng gói sẵn các model weights (LaMa, CodeFormer, Segmentation checkpoint) để tối ưu kích thước repo.
+> - Vui lòng cấu hình artifact theo hướng dẫn nếu muốn chạy thử.
+
 ## Scope
 
 This is a Docker/local deployment skeleton for demo and readiness purposes. The image does not bundle:

@@ -1,5 +1,11 @@
 # External Dependencies
 
+> **Tóm tắt tiếng Việt**
+> 
+> - Tài liệu này liệt kê các phụ thuộc bên ngoài (external dependencies) của dự án.
+> - Dự án không chứa sẵn (không vendor) source tree chính thức của LaMa hay CodeFormer, mà gọi chúng dưới dạng phụ thuộc (wrappers).
+> - Trọng tâm của project là Module 1, do đó các framework sinh ảnh (generative frameworks) chỉ là các tiện ích tuỳ chọn.
+
 ## LaMa
 
 The project repository does not vendor the official LaMa source tree. The pipeline calls LaMa through an external runtime wrapper.
@@ -22,7 +28,7 @@ The project repository does not vendor the official LaMa source tree. The pipeli
 - CodeFormer is an optional dependency.
 - Module 3 should not be described as a completed end-to-end capability.
 - If a qualitative demo is shown in another context, it should still be described only as qualitative or prototype evidence.
-- The repository does not claim identity preservation.
+- The repository provides no identity-preservation guarantee.
 
 ## Why External Dependencies Are Not Committed
 
