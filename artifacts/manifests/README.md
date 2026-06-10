@@ -1,39 +1,32 @@
 # Artifact Manifests
 
-Thư mục này dùng để mô tả artifact local và artifact ngoài repo theo dạng manifest, thay vì commit binary lớn hoặc full dataset vào Git.
+Thư mục này mô tả artifact local và artifact ngoài repo bằng manifest, thay vì commit binary lớn hoặc full datasets vào Git.
+
+## Nội dung chính
+
+- `checkpoints_manifest.csv`: inventory checkpoint và checksum mong đợi
+- `datasets_manifest.csv`: lineage dữ liệu gồm cả synthetic lineage và real-domain fine-tuning datasets
+- `reproduction_runs_manifest.csv`: liên kết giữa các run, dataset lineage, checkpoint lineage và trạng thái bằng chứng
 
 ## Nguyên tắc
 
 - Checkpoint binary không commit vào Git theo mặc định.
-- Full dataset không commit vào Git theo mặc định.
-- Manifest giữ vai trò mô tả:
-  - artifact nào đang có local;
-  - artifact nào chỉ tồn tại ở external source;
-  - checksum/SHA256 nào được kỳ vọng;
-  - artifact nào chỉ mang tính historical.
+- Full datasets không commit vào Git theo mặc định.
+- Manifest có thể trỏ tới external local paths để mô tả provenance, nhưng không biến các binary đó thành tracked files.
+- Skeleton folders dưới `data/raw/` và `data/processed/` chỉ mô tả local layout mong đợi.
+- Skeleton folders không phải bằng chứng rằng full dataset payload đã được commit vào repository.
+- Full datasets được resolve qua manifests và external paths ngoài Git.
 
-## Cách đọc `status`
+## Cách hiểu trạng thái
 
-- `available`: file hiện có thể tồn tại trong local workspace ở đúng path được khai báo.
-- `available_external_only`: artifact có external source rõ ràng nhưng không yêu cầu phải nằm trong repo workspace.
-- `available_local_only`: artifact local tồn tại như runtime snapshot/visual support, không phải source-of-truth training data.
-- `not_found_or_historical_only`: không còn đủ artifact local để kiểm chứng trực tiếp; row chỉ giữ vai trò historical/provenance.
-
-## Vì sao không commit binary
-
-- Giữ repo submission nhẹ và dễ review.
-- Tránh biến repo submission thành kho chứa artifact research.
-- Tách source code khỏi checkpoint, dataset, outputs và logs.
+- `available`: artifact nhỏ hoặc docs asset đang có trong repo/workspace theo policy
+- `available_external_only`: artifact có external source rõ ràng nhưng không nằm trong Git
+- `available_local_only`: artifact local có thể tồn tại cho runtime/demo nhưng không phải source-of-truth training data
+- `historical_evidence_only`: chỉ giữ vai trò provenance hoặc training lineage; local full artifact không được đóng gói trong repo này
+- `rejected_or_historical`: artifact lịch sử hoặc dataset bị loại, không nên trình bày như final dataset
+- `not_found_local_artifact`: không tìm thấy artifact local đầy đủ, nhưng row vẫn hợp lệ nếu chỉ có historical evidence
 
 ## Kiểm tra artifact local
-
-Dùng:
-
-```bash
-python -B scripts/verify_artifacts.py --help
-```
-
-Ví dụ:
 
 ```bash
 python -B scripts/verify_artifacts.py check-checkpoints --repo-root .
@@ -41,4 +34,4 @@ python -B scripts/verify_artifacts.py check-datasets --repo-root .
 python -B scripts/verify_artifacts.py check-all --repo-root . --strict
 ```
 
-Script chỉ kiểm tra manifest, path, Git tracking và checksum. Script không tự tải, không tự copy và không sửa repo.
+Script kiểm tra manifest, path, Git tracking và checksum. Script không tự tải, không tự copy và không sửa repo.

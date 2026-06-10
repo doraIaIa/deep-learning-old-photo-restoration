@@ -1,37 +1,37 @@
 # Data Policy
 
-Repo submission không chứa full dataset huấn luyện trong Git.
+Full datasets are external and intentionally excluded from Git.
 
-## External datasets chính
+The repository keeps manifests, split metadata, documentation assets, and small examples only.
 
-- `F:\deeplearning\old_photo_mask\old_photo_pairs_10_hq`
-- `F:\deeplearning\r013_finetune_set-20260608T080800Z-3-001\r013_finetune_set`
+## Data lineage
 
-## Repo này giữ gì
+1. Clean image source: DIV2K clean images
+2. Crack source: CrackForest crack annotations and source imagery
+3. Processed crack bank: RGBA crack assets used by the synthetic pipeline
+4. Synthetic pairs: `ds-crack3d-512-n1000-v001` for the historical synthetic pretraining lineage
+5. Real fine-tune datasets: `old_photo_pairs_10_hq` and `r013_finetune_set`
 
-- manifest dữ liệu mức tóm tắt;
-- sample/golden nhỏ nếu cần cho demo hoặc docs;
-- có thể giữ split nhỏ hoặc manifest checksum trong phase sau nếu thật sự cần cho reproducibility.
+## Expected layout
 
-## Repo này không giữ gì
+- `data/raw/` documents the local layout for external raw datasets
+- `data/processed/` documents the local layout for processed assets and derived datasets
+- `data/splits/` stores lightweight split metadata when needed
+- `data/manifests/` stores provenance and lineage manifests
 
-- full images/masks của dataset huấn luyện;
-- manual-mask workspace lớn;
-- overlays/quality checks đầy đủ;
-- runtime outputs lớn.
+Skeleton folders under `data/raw/` and `data/processed/` document the expected local layout only. They do not mean that full dataset payloads are committed to the repository.
 
-## Thiết lập path
+## Path mapping
 
-- path external được cấu hình theo máy qua `configs/external_paths.yaml` hoặc manifest liên quan;
-- không commit full dataset chỉ để làm repo trông “đầy đủ”.
+Use `configs/external_paths.example.yaml` together with:
 
-## Mục đích của thư mục `data/`
+- `data/manifests/`
+- `artifacts/manifests/`
 
-Thư mục `data/` trong submission repo, nếu được dùng, nên là nơi chứa:
+to map machine-specific local paths.
 
-- README chính sách dữ liệu;
-- manifest nhỏ;
-- split snapshot nhỏ;
-- sample tối thiểu.
+## Git policy
 
-Không dùng thư mục này để copy dataset thật vào Git.
+- Do not commit full datasets.
+- Do not commit large processed image collections.
+- Keep only manifests, split metadata, and small examples needed for documentation or lightweight verification.

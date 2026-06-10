@@ -1,71 +1,74 @@
 # Artifact Packaging
 
-Tài liệu này mô tả cách repo submission đóng gói bằng chứng artifact mà không biến repo thành kho chứa checkpoint hoặc dataset research.
+Tài liệu này mô tả cách repo đóng gói bằng chứng artifact mà không biến repository thành kho chứa checkpoint, dataset research hoặc runtime outputs lớn.
 
-## Checkpoint final của Module 1
+## Module 1 checkpoint lineage
 
 - Checkpoint tham chiếu mạnh nhất cho Module 1 là `R013_REPRO`.
-- Source-of-truth bên ngoài repo:
+- Source-of-truth ngoài repo được cấu hình qua local artifact path ngoài Git; xem thêm:
 
 ```text
-F:\deeplearning\experiment_value\module1_retrain_sequence\R013_REPRO\best_iou.ckpt
+<LOCAL_ARTIFACT_ROOT>/module1_retrain_sequence/R013_REPRO/best_iou.ckpt
 ```
 
-- Local workspace hiện có checkpoint Module 1 ở path:
+- Workspace local hiện có checkpoint Module 1 tại:
 
 ```text
 checkpoints/segmenter/seg-unet-attn-r013-gen120-fixed118-local/best_val_iou.pth
 ```
 
-- Binary này bị ignore theo policy và không nên commit.
+- Binary checkpoint vẫn là local ignored artifact và không nên commit.
+- Dataset lineage và artifact paths chi tiết được ghi trong `artifacts/manifests/` và được ánh xạ cục bộ qua `configs/external_paths.example.yaml`.
 
-## Vì sao checkpoint binary bị ignore
+## Synthetic pretraining data lineage
 
-- Giữ repo nhẹ và dễ nộp.
-- Tách source code khỏi weights.
-- Tránh kéo thêm artifact research không cần thiết vào Git history.
+Synthetic pretraining lineage cho Module 1 được mô tả bằng manifest-driven provenance:
 
-## Dataset là external
+1. Clean images từ DIV2K
+2. Crack-source imagery và annotations từ CrackForest
+3. Processed crack bank dưới dạng RGBA assets
+4. Synthetic dataset `ds-crack3d-512-n1000-v001`
+5. Historical synthetic runs `R006` đến `R009`
 
-Các dataset training chính không nằm trong Git:
+`R009` giữ vai trò synthetic pretraining/init stage. Đây không phải checkpoint real-domain cuối cùng.
 
-- `old_photo_pairs_10_hq`
-- `r013_finetune_set`
+## Real-domain fine-tuning progression
 
-Repo chỉ nên giữ:
+Sau synthetic initialization:
 
-- manifest dữ liệu;
-- sample/golden nhỏ;
-- docs giải thích provenance;
-- script verify artifact local.
+- `R010_REPRO`: fine-tune trên `old_photo_pairs_10_hq` với thin masks
+- `R011_REPRO`: fine-tune trên repair-mask target
+- `R012_REPRO`: nhánh manual-mask mang tính experimental
+- `R013_REPRO`: final controlled reproduction cho Module 1 trên `r013_finetune_set`
 
-## Reproduction run manifests
+## Dataset và checkpoint policy
 
-Manifest trong `artifacts/manifests/` mô tả:
+- Full datasets là external và không commit vào Git.
+- Checkpoint binaries là local ignored artifacts và không commit vào Git.
+- Repo chỉ giữ manifests, split metadata, docs assets nhỏ và sample tối thiểu.
 
-- checkpoint lineage;
-- reproduction runs;
-- dataset provenance;
-- artifact nào local, artifact nào external, artifact nào chỉ historical.
+## Manifest-driven verification
 
-## Verify command
+Manifest trong `artifacts/manifests/` và `data/manifests/` mô tả:
 
-```bash
-python -B scripts/verify_artifacts.py check-all --repo-root .
-```
+- dataset provenance
+- synthetic lineage
+- reproduction run lineage
+- checkpoint availability
+- artifact nào external, historical hoặc local-only
 
-Có thể kiểm tra riêng:
+Kiểm tra manifest:
 
 ```bash
 python -B scripts/verify_artifacts.py check-checkpoints --repo-root .
 python -B scripts/verify_artifacts.py check-datasets --repo-root .
+python -B scripts/verify_artifacts.py check-all --repo-root .
 ```
 
 ## Boundary
 
-Đây là artifact evidence packaging cho submission repo.
-
-- Không phải automatic training pipeline.
-- Không tự tải checkpoint.
-- Không tự copy dataset.
-- Không thay thế repo research gốc.
+- Repo này không tự tải checkpoint.
+- Repo này không tự copy dataset.
+- Repo này không đóng gói full training reproduction tự động.
+- Repo này không claim LaMa fine-tune.
+- Repo này không claim LPIPS/FID hoàn chỉnh nếu artifact tương ứng chưa được đóng gói.
