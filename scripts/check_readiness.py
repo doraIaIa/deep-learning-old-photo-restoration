@@ -28,7 +28,9 @@ class CheckItem:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Kiểm tra mức sẵn sàng chạy repo submission.")
+    parser = argparse.ArgumentParser(
+        description="Inspect artifact configuration and local runtime readiness for this project."
+    )
     parser.add_argument("--config", type=Path, default=Path("configs/inference.yaml"))
     parser.add_argument("--checkpoint-config", type=Path, default=Path("configs/checkpoints.yaml"))
     parser.add_argument("--external-config", type=Path, default=Path("configs/external_paths.yaml"))
@@ -48,9 +50,9 @@ def check_package_import(results: list[CheckItem]) -> None:
     try:
         import old_photo_restoration  # noqa: F401
     except Exception as exc:
-        add_result(results, "FAIL", f"Không import được package old_photo_restoration: {exc}", core_ok=False)
+        add_result(results, "FAIL", f"Could not import old_photo_restoration: {exc}", core_ok=False)
         return
-    add_result(results, "OK", "Import package old_photo_restoration thành công")
+    add_result(results, "OK", "Imported old_photo_restoration successfully")
 
 
 def check_python_and_torch(results: list[CheckItem]) -> None:
@@ -58,19 +60,19 @@ def check_python_and_torch(results: list[CheckItem]) -> None:
     try:
         import torch
     except Exception as exc:
-        add_result(results, "FAIL", f"Không import được torch: {exc}", core_ok=False)
+        add_result(results, "FAIL", f"Could not import torch: {exc}", core_ok=False)
         return
 
-    add_result(results, "OK", f"Import torch thành công: {torch.__version__}")
+    add_result(results, "OK", f"Imported torch successfully: {torch.__version__}")
     add_result(results, "OK", f"torch.cuda.is_available(): {torch.cuda.is_available()}")
 
 
 def check_config(args: argparse.Namespace, results: list[CheckItem]) -> ProjectConfig | None:
     external_config_path = resolve_path(args.external_config)
     if external_config_path.exists():
-        add_result(results, "OK", f"Tìm thấy external config: {external_config_path}")
+        add_result(results, "OK", f"Found local external config: {external_config_path}")
     else:
-        add_result(results, "MISSING", f"Thiếu external config local: {external_config_path}", core_ok=False)
+        add_result(results, "MISSING", f"Missing local external config: {external_config_path}", core_ok=False)
 
     try:
         config = load_config(
@@ -79,29 +81,29 @@ def check_config(args: argparse.Namespace, results: list[CheckItem]) -> ProjectC
             external_path=external_config_path,
         )
     except Exception as exc:
-        add_result(results, "FAIL", f"load_config() thất bại: {exc}", core_ok=False)
+        add_result(results, "FAIL", f"load_config() failed: {exc}", core_ok=False)
         return None
 
-    add_result(results, "OK", "load_config() thành công")
+    add_result(results, "OK", "load_config() succeeded")
     return config
 
 
 def check_segmentation_checkpoint(config: ProjectConfig, results: list[CheckItem]) -> None:
     checkpoint_path = config.checkpoint.expected_path
     if not checkpoint_path.exists():
-        add_result(results, "MISSING", f"Thiếu checkpoint r013: {checkpoint_path}", core_ok=False)
+        add_result(results, "MISSING", f"Missing R013 checkpoint: {checkpoint_path}", core_ok=False)
         return
 
-    add_result(results, "OK", f"Tìm thấy checkpoint r013: {checkpoint_path}")
+    add_result(results, "OK", f"Found R013 checkpoint: {checkpoint_path}")
     actual_sha256 = sha256_file(checkpoint_path).lower()
     expected_sha256 = config.checkpoint.sha256.lower()
     if actual_sha256 == expected_sha256:
-        add_result(results, "OK", f"SHA256 checkpoint r013 khớp: {actual_sha256}")
+        add_result(results, "OK", f"R013 checkpoint SHA256 matches: {actual_sha256}")
     else:
         add_result(
             results,
             "FAIL",
-            f"SHA256 checkpoint r013 không khớp. expected={expected_sha256}, actual={actual_sha256}",
+            f"R013 checkpoint SHA256 mismatch. expected={expected_sha256}, actual={actual_sha256}",
             core_ok=False,
         )
 
@@ -109,19 +111,19 @@ def check_segmentation_checkpoint(config: ProjectConfig, results: list[CheckItem
 def check_lama(config: ProjectConfig, results: list[CheckItem]) -> None:
     lama = config.lama
     if lama.repo_root.exists():
-        add_result(results, "OK", f"LaMa repo_root tồn tại: {lama.repo_root}")
+        add_result(results, "OK", f"LaMa repo_root exists: {lama.repo_root}")
     else:
-        add_result(results, "MISSING", f"Thiếu LaMa repo_root: {lama.repo_root}", core_ok=False)
+        add_result(results, "MISSING", f"Missing LaMa repo_root: {lama.repo_root}", core_ok=False)
 
     if lama.predict_script.exists():
-        add_result(results, "OK", f"LaMa predict.py tồn tại: {lama.predict_script}")
+        add_result(results, "OK", f"LaMa predict.py exists: {lama.predict_script}")
     else:
-        add_result(results, "MISSING", f"Thiếu LaMa predict.py: {lama.predict_script}", core_ok=False)
+        add_result(results, "MISSING", f"Missing LaMa predict.py: {lama.predict_script}", core_ok=False)
 
     if lama.checkpoint.exists():
-        add_result(results, "OK", f"LaMa checkpoint tồn tại: {lama.checkpoint}")
+        add_result(results, "OK", f"LaMa checkpoint exists: {lama.checkpoint}")
     else:
-        add_result(results, "MISSING", f"Thiếu LaMa checkpoint: {lama.checkpoint}", core_ok=False)
+        add_result(results, "MISSING", f"Missing LaMa checkpoint: {lama.checkpoint}", core_ok=False)
 
 
 def check_codeformer(config: ProjectConfig, results: list[CheckItem]) -> None:
@@ -129,12 +131,12 @@ def check_codeformer(config: ProjectConfig, results: list[CheckItem]) -> None:
     repo_exists = codeformer.repo_root.exists()
     ckpt_exists = codeformer.checkpoint.exists()
     if repo_exists and ckpt_exists:
-        add_result(results, "OPTIONAL", f"CodeFormer optional dependency sẵn sàng: repo={codeformer.repo_root}")
+        add_result(results, "OPTIONAL", f"Optional CodeFormer dependency is available: repo={codeformer.repo_root}")
         return
     if not repo_exists:
-        add_result(results, "OPTIONAL", f"CodeFormer repo chưa có: {codeformer.repo_root}")
+        add_result(results, "OPTIONAL", f"CodeFormer repository is not available: {codeformer.repo_root}")
     if not ckpt_exists:
-        add_result(results, "OPTIONAL", f"CodeFormer weights chưa có: {codeformer.checkpoint}")
+        add_result(results, "OPTIONAL", f"CodeFormer weights are not available: {codeformer.checkpoint}")
 
 
 def main() -> int:

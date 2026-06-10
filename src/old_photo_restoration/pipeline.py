@@ -18,7 +18,7 @@ from old_photo_restoration.segmentation.predictor import SegmentationPredictor
 def _read_mask(path: Path) -> np.ndarray:
     mask = cv2.imread(str(path), cv2.IMREAD_UNCHANGED)
     if mask is None:
-        raise FileNotFoundError(f"Không đọc được mask: {path}")
+        raise FileNotFoundError(f"Could not read mask: {path}")
     if mask.ndim == 3:
         if mask.shape[2] == 4:
             mask = mask[:, :, :3]
@@ -29,7 +29,7 @@ def _read_mask(path: Path) -> np.ndarray:
 def _write_mask(path: Path, mask: np.ndarray) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     if not cv2.imwrite(str(path), mask):
-        raise RuntimeError(f"Không ghi được mask: {path}")
+        raise RuntimeError(f"Could not write mask: {path}")
 
 
 def _mask_ratio(mask: np.ndarray) -> float:
@@ -63,9 +63,9 @@ class RestorationPipeline:
         resolved_output_dir = output_dir.resolve()
 
         if not resolved_image.exists():
-            raise FileNotFoundError(f"Không tìm thấy ảnh đầu vào: {resolved_image}")
+            raise FileNotFoundError(f"Input image was not found: {resolved_image}")
         if face_mode != "off":
-            raise NotImplementedError("CodeFormer is not implemented in Phase 1C. Use --face-mode off.")
+            raise NotImplementedError("CodeFormer is an optional dependency and is currently unavailable. Use --face-mode off.")
         resolved_output_dir.mkdir(parents=True, exist_ok=True)
         final_mask_path = resolved_output_dir / "final_mask.png"
         auto_metadata: dict[str, Any] = {}
@@ -103,7 +103,7 @@ class RestorationPipeline:
         else:
             resolved_mask = mask_path.resolve()
             if not resolved_mask.exists():
-                raise FileNotFoundError(f"Không tìm thấy mask đầu vào: {resolved_mask}")
+                raise FileNotFoundError(f"Input mask was not found: {resolved_mask}")
             final_mask = _read_mask(resolved_mask)
             _write_mask(final_mask_path, final_mask)
 
@@ -117,7 +117,7 @@ class RestorationPipeline:
 
         last_result = self.inpainter.last_result or {}
         metadata: dict[str, Any] = {
-            "pipeline_phase": "2B_auto_mask" if mask_path is None else "1C_mask_bypass",
+            "pipeline_mode_label": "auto_mask" if mask_path is None else "mask_bypass",
             "image_path": str(resolved_image),
             "mask_path": str(resolved_mask),
             "restored_path": str(restored_path),

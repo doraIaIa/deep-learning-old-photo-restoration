@@ -10,4 +10,6 @@ class CodeFormerWrapper:
         self.conda_env = conda_env
 
     def run(self, image_path: Path, output_dir: Path, fidelity: float = 0.7) -> Path:
-        raise NotImplementedError("CodeFormer wrapper mới chưa được migrate trong phase này.")
+        raise NotImplementedError(
+            "CodeFormer requires an external model dependency that is not configured in this environment."
+        )

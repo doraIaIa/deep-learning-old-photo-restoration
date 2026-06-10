@@ -19,14 +19,14 @@ def compute_iou_binary(pred_mask: np.ndarray, gt_mask: np.ndarray) -> float:
 
 def compute_mae_image(pred_image: np.ndarray, gt_image: np.ndarray) -> float:
     if pred_image.shape != gt_image.shape:
-        raise ValueError(f"Ảnh phải cùng shape để tính MAE: {pred_image.shape} vs {gt_image.shape}")
+        raise ValueError(f"Images must share the same shape to compute MAE: {pred_image.shape} vs {gt_image.shape}")
     diff = np.abs(pred_image.astype(np.float32) - gt_image.astype(np.float32))
     return float(diff.mean())
 
 
 def compute_psnr(pred_image: np.ndarray, gt_image: np.ndarray) -> float:
     if pred_image.shape != gt_image.shape:
-        raise ValueError(f"Ảnh phải cùng shape để tính PSNR: {pred_image.shape} vs {gt_image.shape}")
+        raise ValueError(f"Images must share the same shape to compute PSNR: {pred_image.shape} vs {gt_image.shape}")
     mse = float(np.mean(np.square(pred_image.astype(np.float32) - gt_image.astype(np.float32))))
     return float("inf") if mse == 0.0 else float(20.0 * np.log10(255.0) - 10.0 * np.log10(mse))
 
@@ -52,8 +52,8 @@ def dice_score(y_true: np.ndarray, y_pred: np.ndarray) -> float:
 
 
 def lpips_score(*_args: object, **_kwargs: object) -> float:
-    raise NotImplementedError("LPIPS là optional dependency và chưa được triển khai trong phase này.")
+    raise NotImplementedError("LPIPS is unavailable for this artifact set because the optional dependency is not configured.")
 
 
 def fid_score(*_args: object, **_kwargs: object) -> float:
-    raise NotImplementedError("FID là optional dependency và chưa được triển khai trong phase này.")
+    raise NotImplementedError("FID is unavailable for this artifact set because the optional dependency is not configured.")

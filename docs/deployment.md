@@ -2,70 +2,40 @@
 
 ## Scope
 
-Đây là Docker skeleton cho demo/deploy local. Image không chứa:
-- checkpoint segmentation
-- external LaMa
-- external CodeFormer
-- model weights khác
+This is a Docker/local deployment skeleton for demo and readiness purposes. The image does not bundle:
 
-Mục tiêu là cung cấp khung build/chạy cho local Gradio demo và readiness check, không phải image production self-contained.
+- the segmentation checkpoint;
+- the official LaMa source or weights;
+- the CodeFormer source or weights;
+- datasets, research logs, or large runtime outputs.
 
-## Local Run
+## Safe Deployment Policy
+
+- The project repository does not commit checkpoint binaries to Git by default.
+- External runtimes and checkpoints should be mounted or referenced from outside the repository.
+- This document describes policy and expected setup only; it does not modify the user's runtime configuration automatically.
+
+## Checkpoint Reference
+
+- The strongest checkpoint reference is `R013_REPRO`.
+- The external artifact is configured through a local artifact root, for example:
+  `<LOCAL_ARTIFACT_ROOT>/module1_retrain_sequence/R013_REPRO/best_iou.ckpt`
+- SHA256:
+  `5f3b340e38eba8290d2b8ca030bb51126308169f4e42087f46ddac0334e74203`
+
+## Docker and Local Run
 
 ```bash
 python scripts/check_readiness.py
 python scripts/run_gradio_demo.py
 ```
 
-## Docker Build
-
-```bash
-docker build -t old-photo-restoration .
-```
-
-## Docker Compose
-
-1. Copy template config:
-
-```bash
-copy configs\external_paths.example.yaml configs\external_paths.yaml
-```
-
-2. Đặt checkpoint vào:
-
-```text
-checkpoints/segmenter/seg-unet-attn-r013-gen120-fixed118-local/best_val_iou.pth
-```
-
-3. Chạy:
-
 ```bash
 docker compose up --build
 ```
 
-## Volume Policy
+## Caveats
 
-Các thành phần sau phải mount từ host:
-- `configs/external_paths.yaml`
-- `checkpoints/`
-- `examples/outputs/`
-- external model folders nếu cần
-
-## GPU Note
-
-Skeleton mặc định CPU-friendly vì dùng `python:3.10-slim`. Nếu muốn GPU/LaMa chạy hoàn toàn trong container, cần custom image riêng với CUDA và dependency LaMa phù hợp.
-
-## Stability Note
-
-- Gradio chạy với `concurrency limit = 1`
-- Mỗi lần run tạo output folder riêng
-
-## Future Optimization
-
-Roadmap có thể gồm:
-- dynamic offloading
-- FP16
-- ONNX / TensorRT
-- tiling super-resolution
-
-Đây chưa phải phần của implementation hiện tại.
+- Docker is a deployment skeleton, not a self-contained production image.
+- GPU/CUDA runtime setup is machine-specific.
+- LaMa is described here as an official/pretrained external dependency, not as a fine-tuned model shipped by this repository.

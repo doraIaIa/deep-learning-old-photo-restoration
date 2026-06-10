@@ -1,34 +1,34 @@
 # Limitations
 
-## Current Implementation
+## Current Scope
 
-Pipeline hiện tại gồm:
-- r013 segmentation
-- CV crack mask builder
-- union mask
-- `repair_wide_v1`
-- official LaMa inpainting
+The current pipeline focuses on:
 
-## Not Implemented Yet
+- segmentation for damaged regions;
+- hybrid mask construction;
+- `repair_wide_v1`;
+- an official/pretrained LaMa wrapper.
 
-- CodeFormer face restoration
-- Colorization
-- Real-ESRGAN / super-resolution
-- ONNX / TensorRT
-- full dynamic offloading
+## What Is Not a Safe Claim Yet
 
-## Deployment Limitation
+- LaMa fine-tuning.
+- `LPIPS`, `FID`, and `masked-region LPIPS`. (Future evaluation protocol / not claimed)
+- Full quantitative end-to-end evaluation.
+- CodeFormer identity preservation (not guaranteed).
+- A complete Module 3 face restoration flow.
+- Illumination handling as a completed implementation in the current repository.
 
-Docker skeleton hiện tại không self-contained vì không chứa external weights hoặc external runtime.
+## Dataset and Experiment Caveats
 
-## Evaluation Limitation
-
-`demo3` là golden regression case để kiểm tra tái lập, không phải benchmark toàn bộ dữ liệu.
+- `R013` must always be described as `120` initial images but only `118` valid pairs.
+- `R012` is only an experimental branch with `15` manual samples.
+- `demo3` is a golden regression case, not a benchmark representing the full real old-photo set.
 
 ## Future Work
 
-- CodeFormer integration
-- FP16 inference
-- ONNX export
-- tiling super-resolution
-- model offloading
+- LaMa fine-tuning with complete artifacts.
+- LPIPS/FID/masked-region LPIPS (future evaluation protocols, not currently claimed).
+- A stronger end-to-end Module 3 flow.
+- A more complete evaluation protocol beyond smoke/regression checks.
+
+
