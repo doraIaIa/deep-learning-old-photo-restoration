@@ -1,5 +1,6 @@
 # Generated Outputs
 
-This directory stores curated visual evidence used to explain project development. The current tracked case is a controlled demo3 case study. Most generated outputs remain ignored by default.
+Most generated outputs are ignored by default.
 
-- demo3_case_study/
+Curated project-evolution case studies may be tracked. The current tracked case is demo3_case_study.
+This demo3 evidence is qualitative controlled-case evidence, not a dataset-level benchmark.
