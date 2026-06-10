@@ -1,59 +1,59 @@
-# Experiment Summary
+# Tổng hợp Thực nghiệm (Experiment Summary)
 
-This project repository does not bundle the full research history. This document keeps the points that matter for claim safety and minimal reproducibility.
+Dự án này không gộp toàn bộ lịch sử nghiên cứu vào repo. Tài liệu này lưu giữ các điểm quan trọng nhằm bảo đảm claim safety và khả năng tái tạo tối thiểu (minimal reproducibility).
 
-## Module 1 Summary
+## Tóm tắt Module 1
 
-- The strongest reproduced checkpoint reference is `R013_REPRO`.
-- `R013` starts from `120` images but only `118` valid image-mask pairs exist in `masks_fixed`.
-- The missing `masks_fixed` entries are `real_0099` and `real_0112`.
-- The fixed split is `83 / 18 / 17`.
-- `R013_REPRO` initializes from `R011_REPRO`, not from `R012_REPRO`.
-- The main reporting threshold is `0.50`.
-- Historical `R013` validation IoU is `0.381231`; reproduced validation IoU is close at `0.380532`.
-- Fair test `R013_REPRO @0.50`: IoU/F1 = `0.337970 / 0.501339`.
-- Fair test `R011_REPRO @0.55`: IoU/F1 = `0.246848 / 0.394876`.
-- Delta fair comparison: `+0.091122 IoU`, `+0.106463 F1`.
+- Checkpoint reference tái tạo mạnh nhất là `R013_REPRO`.
+- `R013` bắt đầu từ `120` ảnh nhưng chỉ có `118` valid image-mask pairs trong `masks_fixed`.
+- Các mục `masks_fixed` bị thiếu là `real_0099` và `real_0112`.
+- Tập chia cố định (fixed split) là `83 / 18 / 17`.
+- `R013_REPRO` được khởi tạo từ `R011_REPRO`, không phải từ `R012_REPRO`.
+- Ngưỡng đánh giá (reporting threshold) chính là `0.50`.
+- IoU tập validation của `R013` lịch sử là `0.381231`; IoU validation khi tái tạo (reproduced validation IoU) gần bằng, ở mức `0.380532`.
+- Đánh giá công bằng (fair test) cho `R013_REPRO @0.50`: IoU/F1 = `0.337970 / 0.501339`.
+- Đánh giá công bằng cho `R011_REPRO @0.55`: IoU/F1 = `0.246848 / 0.394876`.
+- Mức tăng trưởng qua so sánh công bằng: `+0.091122 IoU`, `+0.106463 F1`.
 
-## R012 Status
+## Trạng thái R012
 
-- `R012` is an experimental manual-subset branch with `15` samples.
-- `R012` is not the final improvement.
-- `R012` is not used as the initialization checkpoint for `R013`.
+- `R012` là một nhánh thực nghiệm với tập con manual-subset gồm `15` mẫu (samples).
+- `R012` không phải là bản cải tiến cuối cùng.
+- `R012` không được dùng làm checkpoint khởi tạo (initialization checkpoint) cho `R013`.
 
-## Module 2 Summary
+## Tóm tắt Module 2
 
-- The repository currently uses official/pretrained LaMa through an external runtime wrapper.
-- It does not claim LaMa fine-tuning.
-- Losses such as `L1`, `perceptual`, and `adversarial` should be treated as future work unless fine-tuning artifacts are available.
+- Repo hiện tại sử dụng bản official/pretrained LaMa thông qua một external runtime wrapper.
+- Repo không claim fine-tune LaMa.
+- Các loss như `L1`, `perceptual`, và `adversarial` nên được xem là công việc tương lai (future work) trừ khi có sẵn các artifact fine-tune.
 
-## Evaluation Boundary
+## Giới hạn Đánh giá (Evaluation Boundary)
 
-- Strong evidence exists for Module 1 segmentation metrics such as `IoU`, `F1`, `Precision`, and `Recall`.
-- The repository does not claim completed `LPIPS`, `FID`, or `masked-region LPIPS`.
-- `demo3` is a golden regression case for smoke/demo checks, not a full benchmark over the real old-photo set.
+- Có minh chứng mạnh mẽ (strong evidence) cho các segmentation metrics của Module 1 như `IoU`, `F1`, `Precision`, và `Recall`.
+- Repo không claim đã hoàn thiện đo lường (completed) `LPIPS`, `FID`, hoặc `masked-region LPIPS`.
+- `demo3` là một golden regression case dùng cho smoke/demo checks, không phải là một benchmark đánh giá toàn bộ trên tập ảnh cũ thực tế.
 
-## Operational Evidence Kept in the Repository
+## Minh chứng Vận hành (Operational Evidence) được lưu trong Repo
 
-- The repository keeps smoke/golden artifacts for `demo3` under `seg_smoke_demo3`, `pipeline_smoke_demo3`, and `gradio_smoke_demo3`.
-- These artifacts are useful for operational checks and regression inspection.
-- They should not be interpreted as full end-to-end quantitative evaluation.
+- Repo giữ các smoke/golden artifacts cho `demo3` tại `seg_smoke_demo3`, `pipeline_smoke_demo3`, và `gradio_smoke_demo3`.
+- Các artifact này hữu ích cho operational checks và regression inspection.
+- Chúng không nên được diễn giải là các điểm số đánh giá toàn bộ (full end-to-end quantitative evaluation).
 
-## Minimal Evidence Kept in the Repository
+## Minh chứng Tối thiểu (Minimal Evidence) được lưu trong Repo
 
-- README and docs describing the current operating scope.
-- Small golden artifacts for `demo3`.
-- CLI and Gradio demo support for smoke/readiness checks.
+- README và docs mô tả giới hạn vận hành hiện tại.
+- Small golden artifacts cho `demo3`.
+- Hỗ trợ CLI và Gradio demo để kiểm tra smoke/readiness checks.
 
-## Moved to Future Work
+## Chuyển sang Công việc Tương lai (Moved to Future Work)
 
-- LaMa fine-tuning.
-- LPIPS/FID/masked-region LPIPS evaluation (planned for future work, not currently claimed).
+- Fine-tune LaMa.
+- Đánh giá LPIPS/FID/masked-region LPIPS (đã lên kế hoạch cho future work, hiện không được claim).
 - Full end-to-end quantitative evaluation.
-- A complete Module 3 face restoration flow.
+- Hoàn thiện một luồng (flow) Module 3 face restoration.
 
 
-## Training Lineage: R006-R013 Segmenter Development
+## Quá trình Huấn luyện (Training Lineage): R006-R013 Segmenter Development
 
 | Run | Objective | Data / Label Target | Key Result | Decision |
 |---|---|---|---|---|
@@ -66,22 +66,20 @@ This project repository does not bundle the full research history. This document
 | **R012** | Manual mask constraint | Manual (15 samples) | Test IoU: 0.2846, Test F1: 0.4430 | Overfit/small-data negative experiment |
 | **R013** | Operational segmenter | Fixed 118 pairs | Val F1: 0.5502, Test IoU: 0.3456 (thr 0.50) | Selected operational checkpoint (seg-unet-attn-r013-gen120-fixed118-local) |
 
-## Failure-Driven Design Decisions
+## Quyết định Thiết kế dựa trên Lỗi (Failure-Driven Design Decisions)
 
-- **Modular Pipeline**: Earlier direct end-to-end restoration attempts motivated the decomposition into a modular segmentation and inpainting pipeline to mitigate regression bias.
-- **Inpainting Dependency**: LaMa is utilized strictly as a pretrained wrapper subprocess. No fine-tuning is performed on LaMa to avoid unstable generative training sequences.
+- **Modular Pipeline**: Các nỗ lực khôi phục end-to-end trực tiếp ban đầu đã tạo động lực cho việc phân rã bài toán thành pipeline modular (segmentation và inpainting) nhằm giảm regression bias.
+- **Inpainting Dependency**: LaMa được sử dụng hoàn toàn dưới dạng một pretrained wrapper subprocess. Repo không claim fine-tune LaMa để tránh chuỗi huấn luyện sinh tự động không ổn định.
 
-## Training Data Evolution
+## Sự tiến hóa Dữ liệu Huấn luyện (Training Data Evolution)
 
-- **Initial Datasets Rejected**: Datasets similar to CrackForest or ds-crack3d-512-n0200-v001 were rejected due to mask area mismatch (e.g., asphalt cracks are thicker than photo scratches).
-- **Synthetic Pretraining Data**: Adopted Crack Bank RGBA assets combined with physically grounded 3D degradation, normal maps, Phong illumination, and alpha blending over DIV2K backgrounds.
-- **Domain Gap & Fine-tuning**: The severe domain gap observed in R009 (IoU dropping to 0.0022 on real test) necessitated a real-domain fine-tuning sequence (R010, R011, R013) using curated real photographs.
+- **Initial Datasets Rejected**: Các tập dữ liệu tương tự CrackForest hoặc ds-crack3d-512-n0200-v001 bị từ chối do không khớp về mask area (ví dụ: vết nứt nhựa đường dày hơn vết xước ảnh).
+- **Synthetic Pretraining Data**: Áp dụng Crack Bank RGBA assets kết hợp với 3D degradation vật lý, normal maps, Phong illumination, và alpha blending trên nền DIV2K.
+- **Domain Gap & Fine-tuning**: Domain gap (khoảng cách miền dữ liệu) nghiêm trọng được quan sát thấy ở R009 (IoU giảm xuống 0.0022 trên tập real test) đòi hỏi một chuỗi fine-tune trên miền dữ liệu thực tế (R010, R011, R013) sử dụng real photographs.
 
 
-## Mask and Threshold Strategy
+## Chiến lược Mask và Ngưỡng (Mask and Threshold Strategy)
 
-- **Loss Progression**: Initially started with BCE+Dice. To heavily penalize false negatives, R008 introduced Tversky Loss (alpha=0.3, beta=0.7). R011 increased beta=0.8 for recall-oriented repair masks.
-- **Threshold Evolution**: Inference thresholds varied dynamically based on model confidence distribution (e.g., R007 at 0.20, R009 at 0.90). The final R013 segmenter uses a stable operational threshold of 0.50.
-- **Hybrid Mask Refinement**: The deep learning mask is unioned with a classical CV branch (CLAHE, Blackhat, Canny). The 
-epair_wide_v1 strategy then applies morphological closing, connection, and dilation to prepare the final mask for inpainting.
-
+- **Loss Progression**: Ban đầu dùng BCE+Dice. Để phạt nặng false negatives, R008 giới thiệu Tversky Loss (alpha=0.3, beta=0.7). R011 tăng beta=0.8 cho các repair masks hướng tới recall.
+- **Threshold Evolution**: Inference thresholds (ngưỡng suy luận) biến thiên linh hoạt dựa trên phân bố độ tự tin của mô hình (ví dụ: R007 tại 0.20, R009 tại 0.90). Mô hình segmenter R013 cuối cùng sử dụng một operational threshold ổn định là 0.50.
+- **Hybrid Mask Refinement**: Deep learning mask được kết hợp (union) với một classical CV branch (CLAHE, Blackhat, Canny). Chiến lược `repair_wide_v1` sau đó áp dụng morphological closing, connection, và dilation để chuẩn bị final mask cho bước inpainting.
