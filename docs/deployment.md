@@ -13,13 +13,13 @@
 
 - Repo submission không commit checkpoint vào Git theo mặc định.
 - External runtime và checkpoint nên được mount hoặc tham chiếu từ bên ngoài repo.
-- Phase 1A không chỉnh sửa các file config meaningful như `configs/checkpoints.yaml` hoặc `configs/inference.yaml`; tài liệu này chỉ nêu rõ policy.
+- Tài liệu này chỉ nêu rõ policy và không tự thay đổi config runtime của người dùng.
 
 ## Checkpoint tham chiếu
 
 - Checkpoint tham chiếu có bằng chứng tái lập mạnh nhất hiện tại là `R013_REPRO`.
-- Artifact ngoài repo:
-  `F:\deeplearning\experiment_value\module1_retrain_sequence\R013_REPRO\best_iou.ckpt`
+- Artifact ngoài repo được cấu hình qua local artifact root, ví dụ:
+  `<LOCAL_ARTIFACT_ROOT>/module1_retrain_sequence/R013_REPRO/best_iou.ckpt`
 - SHA256:
   `5f3b340e38eba8290d2b8ca030bb51126308169f4e42087f46ddac0334e74203`
 

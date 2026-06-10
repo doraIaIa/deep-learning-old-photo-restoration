@@ -18,7 +18,7 @@ Repo submission này đóng gói một pipeline theo hướng mô-đun cho bài 
 - hợp nhất mask học sâu với mask heuristic cổ điển;
 - đưa mask cuối sang official/pretrained LaMa thông qua wrapper chạy external runtime.
 
-Repo này không cố mô tả toàn bộ lịch sử thực nghiệm của repo research cũ. Các claim trong README được giới hạn theo những gì đang có bằng chứng mạnh trong `experiment_value` và trong code hiện tại của repo submission.
+Repo này không cố mô tả toàn bộ lịch sử thực nghiệm nghiên cứu trước đó. Các claim trong README được giới hạn theo những gì đang có bằng chứng mạnh trong `experiment_value` và trong code hiện tại của repo submission.
 
 ## Current Reproducible Scope
 
@@ -53,7 +53,7 @@ Repo này không cố mô tả toàn bộ lịch sử thực nghiệm của repo
 - `R012` chỉ là một nhánh thực nghiệm với `15` manual samples.
 - `R012` không vượt `R011` một cách thuyết phục và không được dùng làm init cho `R013`.
 - Các ghi chú về threshold rất thấp hoặc chế độ “sensitive” chỉ nên xem là mode suy luận tùy chọn, không phải claim metric chính.
-- Một phần tài liệu evaluation và ablation trong repo submission vẫn ở trạng thái tối thiểu và sẽ được hoàn thiện ở phase sau.
+- Một phần tài liệu evaluation và ablation trong repo submission vẫn ở trạng thái tối thiểu và sẽ được hoàn thiện khi có thêm artifact tương ứng.
 
 ## What Is Future Work
 
@@ -89,11 +89,11 @@ Pipeline ưu tiên khả năng quan sát trung gian, giúp tách riêng lỗi �
 
 - Checkpoint không commit vào Git theo mặc định.
 - Repo ưu tiên `external checkpoint path + manifest + SHA256`.
-- Checkpoint tham chiếu ngoài repo cho `R013_REPRO`:
-  `F:\deeplearning\experiment_value\module1_retrain_sequence\R013_REPRO\best_iou.ckpt`
+- Checkpoint tham chiếu ngoài repo cho `R013_REPRO` được cấu hình qua local artifact root, ví dụ:
+  `<LOCAL_ARTIFACT_ROOT>/module1_retrain_sequence/R013_REPRO/best_iou.ckpt`
 - SHA256 của checkpoint `R013_REPRO`:
   `5f3b340e38eba8290d2b8ca030bb51126308169f4e42087f46ddac0334e74203`
-- Config local như `configs/external_paths.yaml` vẫn là cấu hình theo máy và không nên commit.
+- Config local như `configs/external_paths.yaml` vẫn là cấu hình theo máy và không nên commit. Dùng `configs/external_paths.example.yaml` và các manifest trong `artifacts/manifests/` để map local paths.
 
 ## LaMa And Module 3 Caveats
 

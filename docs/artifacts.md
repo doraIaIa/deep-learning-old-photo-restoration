@@ -19,6 +19,7 @@ checkpoints/segmenter/seg-unet-attn-r013-gen120-fixed118-local/best_val_iou.pth
 
 - Binary checkpoint vẫn là local ignored artifact và không nên commit.
 - Dataset lineage và artifact paths chi tiết được ghi trong `artifacts/manifests/` và được ánh xạ cục bộ qua `configs/external_paths.example.yaml`.
+- Public-facing checkpoint skeleton được documented tại `checkpoints/segmenter/r013_final/` và `checkpoints/segmenter/r009_synthetic_pretrain/`; các skeleton này không chứa binary.
 
 ## Synthetic pretraining data lineage
 

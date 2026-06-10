@@ -26,7 +26,7 @@ Repo submission hiện nhắm tới reproducibility tối thiểu cho:
 Checkpoint tham chiếu ngoài repo:
 
 ```text
-F:\deeplearning\experiment_value\module1_retrain_sequence\R013_REPRO\best_iou.ckpt
+<LOCAL_ARTIFACT_ROOT>/module1_retrain_sequence/R013_REPRO/best_iou.ckpt
 ```
 
 SHA256:
