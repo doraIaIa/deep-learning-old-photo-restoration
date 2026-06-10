@@ -85,10 +85,11 @@ Expected smoke/regression behavior:
 ## Evaluation Boundary
 
 - `demo3` can be reused for smoke/regression checks.
-- README and docs should not be interpreted as evidence that LPIPS/FID or full end-to-end evaluation has been completed.
+- README and docs should not be interpreted as evidence that LPIPS/FID or full end-to-end evaluation has been completed. (Future evaluation protocol / not claimed)
 - The strongest quantitative evidence currently remains the Module 1 segmentation metrics.
 
 ## Known Boundaries
 
 - This document describes a minimal smoke/regression replay path, not a full reproduction protocol for the entire research history.
 - `R013_REPRO` is the strongest claim-safe checkpoint reference, but the checkpoint binary itself is not committed to Git by default.
+

@@ -48,7 +48,7 @@ This project repository does not bundle the full research history. This document
 ## Moved to Future Work
 
 - LaMa fine-tuning.
-- LPIPS/FID/masked-region LPIPS evaluation.
+- LPIPS/FID/masked-region LPIPS evaluation. (Future evaluation protocol / not claimed)
 - Full end-to-end quantitative evaluation.
 - A complete Module 3 face restoration flow.
 
@@ -84,3 +84,4 @@ This project repository does not bundle the full research history. This document
 - **Threshold Evolution**: Inference thresholds varied dynamically based on model confidence distribution (e.g., R007 at 0.20, R009 at 0.90). The final R013 segmenter uses a stable operational threshold of 0.50.
 - **Hybrid Mask Refinement**: The deep learning mask is unioned with a classical CV branch (CLAHE, Blackhat, Canny). The 
 epair_wide_v1 strategy then applies morphological closing, connection, and dilation to prepare the final mask for inpainting.
+

@@ -22,9 +22,9 @@ These are the metrics with the strongest evidence across the `R010_REPRO -> R013
 
 ## Claims That Should Remain Deferred
 
-- `LPIPS`
-- `FID`
-- `masked-region LPIPS`
+- `LPIPS` (Future evaluation protocol / not claimed)
+- `FID` (Future evaluation protocol / not claimed)
+- `masked-region LPIPS` (Future evaluation protocol / not claimed)
 - full quantitative end-to-end evaluation
 
 Those items should be described as planned evaluation or future work unless matching artifacts are clearly available in the repository.
@@ -35,3 +35,4 @@ Those items should be described as planned evaluation or future work unless matc
 - The repository does not yet package the full runner stack for `LPIPS`, `FID`, oracle-mask protocols, or full ablation coverage.
 - `scripts/evaluate_segmentation.py` and `scripts/run_ablation.py` currently provide protocol coverage and summaries for available artifacts rather than a full experimental orchestration layer.
 - For that reason, the current docs should not be interpreted as evidence that the entire evaluation stack is complete.
+

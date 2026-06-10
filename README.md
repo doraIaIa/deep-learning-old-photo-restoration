@@ -58,7 +58,7 @@ This repository does not attempt to retell the entire research history. Claims i
 ## What Is Future Work
 
 - LaMa fine-tuning with complete training artifacts.
-- LPIPS, FID, and masked-region LPIPS.
+- LPIPS, FID, and masked-region LPIPS. (Future evaluation protocol / not claimed)
 - Full end-to-end quantitative evaluation for the entire pipeline.
 - A complete Module 3 face restoration flow.
 - Identity-preservation metrics for face restoration.
@@ -190,4 +190,5 @@ src/old_photo_restoration/
 - `LPIPS`, `FID`, and `masked-region LPIPS` are not complete artifacts in the current repository.
 - Module 3 does not yet have quantitative identity-preservation evaluation.
 
-Detailed claim-safety notes from the earlier documentation pass remain available in `docs/PHASE1A_CLAIM_SAFETY_CHANGELOG.md`.
+Detailed claim-safety notes from the earlier documentation pass remain available in `docs/scope_and_claim_safety.md`.
+
