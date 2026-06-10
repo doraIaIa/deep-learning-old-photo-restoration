@@ -1,34 +1,32 @@
-# Limitations
+# Giới hạn (Limitations)
 
-## Current Scope
+## Phạm vi Hiện tại (Current Scope)
 
-The current pipeline focuses on:
+Pipeline hiện tại tập trung vào:
 
-- segmentation for damaged regions;
-- hybrid mask construction;
-- `repair_wide_v1`;
-- an official/pretrained LaMa wrapper.
+- Phân vùng (segmentation) các vùng hư hại;
+- Xây dựng mặt nạ lai (hybrid mask construction);
+- Sử dụng chiến lược `repair_wide_v1`;
+- Một official/pretrained LaMa wrapper.
 
-## What Is Not a Safe Claim Yet
+## Những Điều Chưa Phải Là Safe Claim (What Is Not a Safe Claim Yet)
 
-- LaMa fine-tuning.
-- `LPIPS`, `FID`, and `masked-region LPIPS`. (Future evaluation protocol / not claimed)
-- Full quantitative end-to-end evaluation.
-- CodeFormer identity preservation (not guaranteed).
-- A complete Module 3 face restoration flow.
-- Illumination handling as a completed implementation in the current repository.
+- Fine-tune LaMa.
+- Các phép đo `LPIPS`, `FID`, và `masked-region LPIPS`. (Được lên kế hoạch cho future evaluation protocol / hiện không claim)
+- Đánh giá định lượng toàn bộ end-to-end (Full quantitative end-to-end evaluation).
+- Bảo toàn danh tính (identity preservation) của CodeFormer (không được bảo đảm).
+- Một luồng Module 3 face restoration hoàn chỉnh.
+- Xử lý chiếu sáng (Illumination handling) như một bản triển khai hoàn chỉnh trong repo hiện tại.
 
-## Dataset and Experiment Caveats
+## Lưu ý về Dataset và Thực nghiệm (Dataset and Experiment Caveats)
 
-- `R013` must always be described as `120` initial images but only `118` valid pairs.
-- `R012` is only an experimental branch with `15` manual samples.
-- `demo3` is a golden regression case, not a benchmark representing the full real old-photo set.
+- `R013` phải luôn được mô tả là xuất phát từ `120` ảnh ban đầu nhưng chỉ có `118` cặp hợp lệ (valid pairs).
+- `R012` chỉ là một nhánh thực nghiệm (experimental branch) với `15` mẫu thủ công.
+- `demo3` là một golden regression case, không phải là một benchmark đại diện cho toàn bộ tập ảnh cũ thực tế.
 
-## Future Work
+## Công việc Tương lai (Future Work)
 
-- LaMa fine-tuning with complete artifacts.
-- LPIPS/FID/masked-region LPIPS (future evaluation protocols, not currently claimed).
-- A stronger end-to-end Module 3 flow.
-- A more complete evaluation protocol beyond smoke/regression checks.
-
-
+- Fine-tune LaMa với các artifact đầy đủ.
+- Đo lường LPIPS/FID/masked-region LPIPS (các giao thức đánh giá tương lai, hiện không được claim).
+- Một luồng Module 3 mạnh mẽ hơn.
+- Một giao thức đánh giá (evaluation protocol) hoàn thiện hơn thay vì chỉ dừng ở các smoke/regression checks.

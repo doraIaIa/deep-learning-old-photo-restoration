@@ -1,29 +1,29 @@
-# Reproducibility
+# Khả năng Tái tạo (Reproducibility)
 
-## Current Reproducible Scope
+## Phạm vi Tái tạo Hiện tại (Current Reproducible Scope)
 
-This repository currently targets minimal reproducibility for:
+Repo hiện tại cung cấp khả năng tái tạo tối thiểu (minimal reproducibility) cho:
 
-- Module 1 segmentation using the `R013_REPRO` checkpoint reference;
-- the pipeline `segmentation -> hybrid mask -> official/pretrained LaMa`;
-- the `demo3` golden regression case.
+- Module 1 segmentation sử dụng tham chiếu checkpoint `R013_REPRO`;
+- Pipeline: `segmentation -> hybrid mask -> official/pretrained LaMa`;
+- Golden regression case `demo3`.
 
-## Module 1 Facts That Must Stay Accurate
+## Các thông tin về Module 1 cần được giữ nguyên (Module 1 Facts That Must Stay Accurate)
 
-- `R013` starts from `120` images but only `118` valid image-mask pairs exist.
-- The missing `masks_fixed` entries are `real_0099` and `real_0112`.
-- The fixed split is `83 / 18 / 17`.
-- `R013_REPRO` initializes from `R011_REPRO`.
-- The main threshold for reporting and fair comparison is `0.50`.
+- `R013` bắt đầu từ `120` ảnh nhưng chỉ có `118` valid image-mask pairs.
+- Các mục `masks_fixed` bị thiếu là `real_0099` và `real_0112`.
+- Tập chia cố định (fixed split) là `83 / 18 / 17`.
+- `R013_REPRO` được khởi tạo từ `R011_REPRO`.
+- Ngưỡng chính (main threshold) cho báo cáo và fair comparison là `0.50`.
 
-## External Artifacts Required
+## Các External Artifacts cần có (External Artifacts Required)
 
 - `configs/external_paths.yaml`
-- an external segmentation checkpoint
-- the official LaMa repository and weights
-- the optional CodeFormer repository and weights if the user wants to explore that branch
+- Một external segmentation checkpoint
+- Repo official LaMa và weights
+- Repo CodeFormer tùy chọn và weights nếu người dùng muốn chạy thử.
 
-External checkpoint reference:
+Tham chiếu external checkpoint (External checkpoint reference):
 
 ```text
 <LOCAL_ARTIFACT_ROOT>/module1_retrain_sequence/R013_REPRO/best_iou.ckpt
@@ -35,20 +35,20 @@ SHA256:
 5f3b340e38eba8290d2b8ca030bb51126308169f4e42087f46ddac0334e74203
 ```
 
-## Minimal Replay Path for Demo3
+## Đường dẫn tái tạo tối thiểu cho Demo3 (Minimal Replay Path for Demo3)
 
-### 1. Prepare external paths
+### 1. Chuẩn bị external paths
 
-- Copy `configs/external_paths.example.yaml` to `configs/external_paths.yaml`.
-- Fill in the local paths for the LaMa runtime and checkpoint artifacts.
+- Sao chép `configs/external_paths.example.yaml` thành `configs/external_paths.yaml`.
+- Điền các đường dẫn cục bộ cho LaMa runtime và các checkpoint artifacts.
 
-### 2. Run readiness checks
+### 2. Chạy readiness checks
 
 ```bash
 python scripts/check_readiness.py
 ```
 
-### 3. Replay the auto-mask smoke case for `demo3`
+### 3. Replay quá trình auto-mask smoke case cho `demo3`
 
 ```bash
 python scripts/run_pipeline.py ^
@@ -59,13 +59,13 @@ python scripts/run_pipeline.py ^
   --reference-mask examples/golden/demo3_r013_repair_wide/final_mask.png
 ```
 
-Expected outputs:
+Các output dự kiến (Expected outputs):
 
 - `final_mask.png`
 - `restored_before_face.png`
 - `metadata.json`
 
-### 4. Replay the mask-bypass smoke case for `demo3`
+### 4. Replay quá trình mask-bypass smoke case cho `demo3`
 
 ```bash
 python scripts/run_pipeline.py ^
@@ -76,26 +76,26 @@ python scripts/run_pipeline.py ^
   --reference examples/golden/demo3_r013_repair_wide/restored_before_face.png
 ```
 
-Expected smoke/regression behavior:
+Hành vi smoke/regression dự kiến (Expected smoke/regression behavior):
 
-- output size matches the golden reference;
-- `metadata.json` is produced;
-- current smoke artifacts show `MAE = 0` and `PSNR = inf` for the mask-bypass path.
+- Kích thước ảnh đầu ra khớp với golden reference;
+- Sinh ra file `metadata.json`;
+- Các smoke artifacts hiện tại hiển thị `MAE = 0` và `PSNR = inf` đối với đường dẫn mask-bypass.
 
-## Evaluation Boundary
+## Giới hạn Đánh giá (Evaluation Boundary)
 
-- `demo3` can be reused for smoke/regression checks.
-- README and docs should not be interpreted as evidence that LPIPS/FID or full end-to-end evaluation has been completed.
-- The strongest quantitative evidence currently remains the Module 1 segmentation metrics.
+- Có thể tái sử dụng `demo3` cho smoke/regression checks.
+- README và tài liệu không nên được diễn giải là minh chứng rằng LPIPS/FID hay full end-to-end evaluation đã được hoàn thiện.
+- Minh chứng định lượng mạnh nhất hiện tại vẫn nằm ở các Module 1 segmentation metrics.
 
-## Known Boundaries
+## Ranh giới đã biết (Known Boundaries)
 
-- This document describes a minimal smoke/regression replay path, not a full reproduction protocol for the entire research history.
-- `R013_REPRO` is the strongest claim-safe checkpoint reference, but the checkpoint binary itself is not committed to Git by default.
+- Tài liệu này chỉ mô tả minimal smoke/regression replay path, không phải toàn bộ quy trình tái tạo cho cả lịch sử nghiên cứu.
+- `R013_REPRO` là tham chiếu checkpoint an toàn nhất (strongest claim-safe checkpoint reference), nhưng bản thân checkpoint binary mặc định sẽ không được commit vào Git.
 
 
 
-## Artifact Layout Note
-- examples/golden/ is the frozen expected reference.
-- examples/outputs/ is generated when running local examples.
-- outputs/ is the recommended local root for new generated experiments.
+## Lưu ý về Bố cục Artifact (Artifact Layout Note)
+- `examples/golden/` là file tham chiếu chuẩn (frozen expected reference).
+- `examples/outputs/` được tạo ra khi chạy script cục bộ (local examples).
+- `outputs/` là thư mục root được khuyên dùng để tạo thí nghiệm mới ở máy local.
