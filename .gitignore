@@ -32,3 +32,5 @@ checkpoints/segmenter/r009_synthetic_pretrain/*
 *.tmp
 *.bak
 configs/external_paths.yaml
+examples/outputs/*
+!examples/outputs/.gitkeep
