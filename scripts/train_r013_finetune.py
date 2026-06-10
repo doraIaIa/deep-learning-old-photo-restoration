@@ -23,49 +23,49 @@ def configure_utf8_stdio() -> None:
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description=(
-            "Safe R013 fine-tune evidence/status CLI cho submission repo. "
-            "Script này không chạy fine-tune thật và không tạo output mặc định."
+            "Report available reproduction metadata for the R013 Module 1 fine-tuning run. "
+            "Training datasets and checkpoint binaries are external artifacts described by manifests."
         )
     )
     subparsers = parser.add_subparsers(dest="command")
 
     status_parser = subparsers.add_parser(
         "status",
-        help="In R013 fine-tune evidence/status từ manifests hiện có.",
+        help="Print R013 reproduction metadata from the configured manifests.",
         description=(
-            "Hiển thị R013_REPRO, dataset facts và checkpoint policy để root script "
-            "không còn là stub chết."
+            "Inspect the R013 reproduction entry, dataset facts, and checkpoint policy "
+            "for the documented Module 1 fine-tuning run."
         ),
     )
     status_parser.add_argument(
         "--runs-manifest",
         type=Path,
         default=DEFAULT_RUNS_MANIFEST,
-        help="Path tới reproduction runs manifest CSV.",
+        help="Path to the reproduction runs manifest CSV.",
     )
     status_parser.add_argument(
         "--checkpoints-manifest",
         type=Path,
         default=DEFAULT_CHECKPOINTS_MANIFEST,
-        help="Path tới checkpoints manifest CSV.",
+        help="Path to the checkpoints manifest CSV.",
     )
     status_parser.add_argument(
         "--datasets-manifest",
         type=Path,
         default=DEFAULT_DATASETS_MANIFEST,
-        help="Path tới datasets manifest CSV.",
+        help="Path to the datasets manifest CSV.",
     )
     status_parser.add_argument(
         "--repo-root",
         type=Path,
         default=Path("."),
-        help="Repo root để resolve path tương đối.",
+        help="Repository root used to resolve relative paths.",
     )
     status_parser.add_argument(
         "--json-output",
         type=Path,
         default=None,
-        help="Nếu truyền, ghi JSON summary ra path chỉ định.",
+        help="Optional path for writing a JSON summary.",
     )
     status_parser.set_defaults(handler=run_status)
     return parser
@@ -74,12 +74,12 @@ def build_parser() -> argparse.ArgumentParser:
 def read_manifest(path: Path) -> tuple[list[dict[str, str]], list[str]]:
     warnings: list[str] = []
     if not path.exists():
-        warnings.append(f"Thiếu manifest: {path}")
+        warnings.append(f"Missing manifest: {path}")
         return [], warnings
     with path.open("r", encoding="utf-8-sig", newline="") as handle:
         rows = [dict(row) for row in csv.DictReader(handle)]
     if not rows:
-        warnings.append(f"Manifest rỗng: {path}")
+        warnings.append(f"Manifest is empty: {path}")
     return rows, warnings
 
 
@@ -134,8 +134,8 @@ def run_status(args: argparse.Namespace) -> int:
             break
     dataset_fact = summarize_dataset_fact(r013_dataset)
 
-    print("r013_finetune_evidence_status_entrypoint")
-    print("this script does not run fine-tuning inside the submission build")
+    print("r013_reproduction_metadata")
+    print("configured training runs and required artifacts are described by manifests")
     if r013_checkpoint is not None:
         print("R013_REPRO is the current final Module 1 checkpoint according to the checkpoints manifest")
     else:
@@ -144,15 +144,18 @@ def run_status(args: argparse.Namespace) -> int:
         print("dataset_fact:", dataset_fact)
         print("dataset_manifest_status:", r013_dataset.get("status", ""))
     else:
-        print("[WARNING] Không tìm thấy dataset row cho R013 trong datasets manifest.")
+        print("[WARNING] Missing dataset row for R013 in the datasets manifest.")
         print("dataset_fact: unavailable_from_manifest")
         print("dataset_manifest_status: unavailable_from_manifest")
     if r013_checkpoint is not None:
         print("checkpoint_policy:", r013_checkpoint.get("git_policy", ""))
         print("checkpoint_local_path:", r013_checkpoint.get("repo_relative_path", ""))
     if r013_run is not None:
-        print("run_summary:", f"best_epoch={r013_run.get('best_epoch','')} | val_iou={r013_run.get('val_iou','')} | val_f1={r013_run.get('val_f1','')}")
-    print("phase_note: this is an evidence/status entrypoint to avoid a dead root script")
+        print(
+            "run_summary:",
+            f"best_epoch={r013_run.get('best_epoch', '')} | val_iou={r013_run.get('val_iou', '')} | val_f1={r013_run.get('val_f1', '')}",
+        )
+    print("see_also: scripts/train/")
     if warnings:
         for item in warnings:
             print(f"[WARNING] {item}")
@@ -168,9 +171,9 @@ def run_status(args: argparse.Namespace) -> int:
         "r013_dataset": r013_dataset,
         "dataset_fact": dataset_fact,
         "notes": [
-            "This script does not run fine-tuning inside the submission build.",
+            "This command reports configured R013 reproduction metadata.",
             "R013_REPRO is scoped to Module 1 only.",
-            "Checkpoint policy is local ignored do not commit.",
+            "Checkpoint binaries are intentionally excluded from Git.",
         ],
     }
     if args.json_output is not None:
@@ -183,7 +186,7 @@ def main() -> int:
     parser = build_parser()
     args = parser.parse_args()
     if not hasattr(args, "handler"):
-        parser.error("Thiếu subcommand. Dùng `status` để xem R013 fine-tune evidence/status.")
+        parser.error("Missing subcommand. Use `status` to inspect R013 reproduction metadata.")
     return int(args.handler(args))
 
 

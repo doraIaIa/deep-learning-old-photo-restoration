@@ -1,9 +1,9 @@
 # Evaluation Protocol
 
-## Phạm vi hiện tại
+## Current Scope
 
-Submission hiện có bằng chứng mạnh nhất cho evaluation của Module 1 segmentation và cho smoke/regression ở `demo3`.
-Tài liệu này mô tả evaluation mong muốn và các bằng chứng đang có, không có nghĩa repo submission đã đóng gói đầy đủ mọi runner đánh giá.
+The strongest evaluation evidence currently available in the repository is for Module 1 segmentation and for smoke or regression behavior around `demo3`.
+This document describes the intended protocol and the evidence that is currently present. It should not be interpreted as proof that every evaluation runner has been fully packaged.
 
 ## Safe Metrics
 
@@ -12,26 +12,26 @@ Tài liệu này mô tả evaluation mong muốn và các bằng chứng đang c
 - `Precision`
 - `Recall`
 
-Các metric trên là phần có evidence mạnh nhất trong chuỗi `R010_REPRO -> R013_REPRO`, với `R013_REPRO` là checkpoint tái lập mạnh nhất hiện tại.
+These are the metrics with the strongest evidence across the `R010_REPRO -> R013_REPRO` lineage, with `R013_REPRO` serving as the strongest current checkpoint reference.
 
-## Cách mô tả an toàn
+## Safe Wording
 
-- Threshold chính để trình bày và fair comparison cho `R013` là `0.50`.
-- `R013` phải được ghi là `120` ảnh ban đầu nhưng chỉ `118` valid pairs.
-- `demo3` chỉ là golden regression case cho smoke/demo.
+- The main threshold used for reporting and fair comparison for `R013` is `0.50`.
+- `R013` should be described as `120` initial images with only `118` valid pairs.
+- `demo3` is a golden regression case for smoke and demo validation.
 
-## Chưa nên claim hoàn tất
+## Claims That Should Remain Deferred
 
 - `LPIPS`
 - `FID`
 - `masked-region LPIPS`
 - full quantitative end-to-end evaluation
 
-Các mục này chỉ nên được mô tả là planned evaluation hoặc future work nếu chưa có artifact rõ ràng trong repo submission.
+Those items should be described as planned evaluation or future work unless matching artifacts are clearly available in the repository.
 
 ## Runner Caveat
 
-- Segmentation metrics hiện có evidence mạnh từ artifact và summary đã audit.
-- Repo submission hiện chưa đóng gói đầy đủ runner cho toàn bộ `LPIPS`, `FID`, oracle-mask protocol và full ablation.
-- `scripts/evaluate_segmentation.py` và `scripts/run_ablation.py` vẫn là mục sẽ xử lý ở Phase 1B nếu tiếp tục.
-- Vì vậy không nên diễn giải docs hiện tại như bằng chứng rằng toàn bộ evaluation stack đã hoàn chỉnh.
+- Segmentation metrics are strongly evidenced by the audited artifacts and summaries.
+- The repository does not yet package the full runner stack for `LPIPS`, `FID`, oracle-mask protocols, or full ablation coverage.
+- `scripts/evaluate_segmentation.py` and `scripts/run_ablation.py` currently provide protocol coverage and summaries for available artifacts rather than a full experimental orchestration layer.
+- For that reason, the current docs should not be interpreted as evidence that the entire evaluation stack is complete.

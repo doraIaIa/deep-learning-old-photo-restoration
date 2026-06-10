@@ -2,28 +2,28 @@
 
 ## Scope
 
-Đây là Docker/local deployment skeleton cho mục đích demo hoặc readiness check. Image không tự chứa:
+This is a Docker/local deployment skeleton for demo and readiness purposes. The image does not bundle:
 
-- checkpoint segmentation;
-- official LaMa source hoặc weight;
-- CodeFormer source hoặc weight;
-- dataset, logs hoặc output research.
+- the segmentation checkpoint;
+- the official LaMa source or weights;
+- the CodeFormer source or weights;
+- datasets, research logs, or large runtime outputs.
 
-## Chính sách triển khai an toàn
+## Safe Deployment Policy
 
-- Repo submission không commit checkpoint vào Git theo mặc định.
-- External runtime và checkpoint nên được mount hoặc tham chiếu từ bên ngoài repo.
-- Tài liệu này chỉ nêu rõ policy và không tự thay đổi config runtime của người dùng.
+- The project repository does not commit checkpoint binaries to Git by default.
+- External runtimes and checkpoints should be mounted or referenced from outside the repository.
+- This document describes policy and expected setup only; it does not modify the user's runtime configuration automatically.
 
-## Checkpoint tham chiếu
+## Checkpoint Reference
 
-- Checkpoint tham chiếu có bằng chứng tái lập mạnh nhất hiện tại là `R013_REPRO`.
-- Artifact ngoài repo được cấu hình qua local artifact root, ví dụ:
+- The strongest checkpoint reference is `R013_REPRO`.
+- The external artifact is configured through a local artifact root, for example:
   `<LOCAL_ARTIFACT_ROOT>/module1_retrain_sequence/R013_REPRO/best_iou.ckpt`
 - SHA256:
   `5f3b340e38eba8290d2b8ca030bb51126308169f4e42087f46ddac0334e74203`
 
-## Docker Và Local Run
+## Docker and Local Run
 
 ```bash
 python scripts/check_readiness.py
@@ -36,6 +36,6 @@ docker compose up --build
 
 ## Caveats
 
-- Docker ở trạng thái skeleton, không phải image production self-contained.
-- GPU/CUDA runtime cần cấu hình riêng theo máy.
-- LaMa trong repo submission được mô tả là official/pretrained external dependency, không phải LaMa fine-tune.
+- Docker is a deployment skeleton, not a self-contained production image.
+- GPU/CUDA runtime setup is machine-specific.
+- LaMa is described here as an official/pretrained external dependency, not as a fine-tuned model shipped by this repository.

@@ -2,31 +2,31 @@
 
 ## LaMa
 
-Repo submission không vendor official LaMa vào cây source. Pipeline gọi LaMa qua wrapper/external runtime.
+The project repository does not vendor the official LaMa source tree. The pipeline calls LaMa through an external runtime wrapper.
 
-- Đây là official/pretrained integration.
-- Không claim LaMa đã fine-tune trong repo submission này.
-- `configs/external_paths.example.yaml` chỉ là template.
-- `configs/external_paths.yaml` là file local theo máy và không nên commit.
+- This is an official/pretrained integration.
+- The repository does not claim LaMa fine-tuning.
+- `configs/external_paths.example.yaml` is only a template.
+- `configs/external_paths.yaml` is machine-specific and should not be committed.
 
 ## Checkpoint Policy
 
-- Checkpoint segmentation không commit vào Git theo mặc định.
-- Artifact tham chiếu ngoài repo cho `R013_REPRO` được cấu hình qua local artifact root, ví dụ:
+- Segmentation checkpoints are not committed to Git by default.
+- The external artifact reference for `R013_REPRO` is configured through a local artifact root, for example:
   `<LOCAL_ARTIFACT_ROOT>/module1_retrain_sequence/R013_REPRO/best_iou.ckpt`
 - SHA256:
   `5f3b340e38eba8290d2b8ca030bb51126308169f4e42087f46ddac0334e74203`
 
 ## CodeFormer
 
-- CodeFormer là dependency optional.
-- Trong repo submission hiện tại, Module 3 không nên được mô tả như một capability end-to-end đã hoàn chỉnh.
-- Nếu có demo qualitative ở ngữ cảnh khác, chỉ nên mô tả ở mức qualitative hoặc prototype.
-- Không claim identity preservation.
+- CodeFormer is an optional dependency.
+- Module 3 should not be described as a completed end-to-end capability.
+- If a qualitative demo is shown in another context, it should still be described only as qualitative or prototype evidence.
+- The repository does not claim identity preservation.
 
-## Vì Sao Không Commit External Dependencies
+## Why External Dependencies Are Not Committed
 
-- Giữ repo submission nhẹ và dễ review.
-- Tránh hard-code path local trong source tree.
-- Dùng `configs/external_paths.example.yaml` và các manifest dưới `artifacts/manifests/` để map local runtime paths.
-- Tách source code khỏi weights, runtime và artifact research.
+- To keep the project repository lightweight and reviewable.
+- To avoid hard-coded local runtime paths in the source tree.
+- To use `configs/external_paths.example.yaml` plus the manifests under `artifacts/manifests/` for local path mapping.
+- To separate source code from weights, runtimes, and research artifacts.

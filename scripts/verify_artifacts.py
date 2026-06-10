@@ -25,7 +25,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description=(
             "Kiểm tra artifact local theo manifest mà không tải, không copy "
-            "và không sửa repo submission."
+            "và không sửa project repository."
         )
     )
     subparsers = parser.add_subparsers(dest="command")

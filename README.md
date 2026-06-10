@@ -1,8 +1,8 @@
 <div align="center">
 
-# Phục Hồi Ảnh Cũ Với Deep Learning
+# Old Photo Restoration with Deep Learning
 
-### Old Photo Restoration — Modular Deep Learning Pipeline
+### Modular Restoration Pipeline
 
 **Crack Segmentation · Hybrid Mask Construction · Official LaMa Wrapper**
 
@@ -10,61 +10,61 @@
 
 ---
 
-## Giới thiệu
+## Introduction
 
-Repo submission này đóng gói một pipeline theo hướng mô-đun cho bài toán phục hồi ảnh cũ. Trọng tâm hiện tại là:
+This project repository packages a modular pipeline for old photo restoration. The current operational scope focuses on:
 
-- phát hiện vùng hư hại dạng vết nứt hoặc rách nhỏ bằng segmentation;
-- hợp nhất mask học sâu với mask heuristic cổ điển;
-- đưa mask cuối sang official/pretrained LaMa thông qua wrapper chạy external runtime.
+- detecting crack-like or small tear regions with segmentation;
+- combining learned masks with classical heuristic masks;
+- sending the final mask to official/pretrained LaMa through an external runtime wrapper.
 
-Repo này không cố mô tả toàn bộ lịch sử thực nghiệm nghiên cứu trước đó. Các claim trong README được giới hạn theo những gì đang có bằng chứng mạnh trong `experiment_value` và trong code hiện tại của repo submission.
+This repository does not attempt to retell the entire research history. Claims in this README are limited to what is strongly evidenced in `experiment_value` and in the current codebase.
 
 ## Current Reproducible Scope
 
-- Checkpoint vận hành có bằng chứng tái lập mạnh nhất hiện tại là `R013_REPRO`.
-- Chuỗi vận hành hiện tại của submission là `segmentation -> hybrid mask -> repair_wide_v1 -> official/pretrained LaMa`.
-- Repo hiện có CLI pipeline qua `scripts/run_pipeline.py`, readiness check qua `scripts/check_readiness.py`, và local demo qua `scripts/run_gradio_demo.py`.
-- Module 3 face restoration chưa phải thành phần vận hành chính trong repo submission hiện tại.
-- `demo3` là golden case phục vụ smoke/regression và trình diễn, không phải benchmark đầy đủ trên toàn bộ tập ảnh cũ thực.
+- The strongest operational checkpoint reference is `R013_REPRO`.
+- The current inference chain is `segmentation -> hybrid mask -> repair_wide_v1 -> official/pretrained LaMa`.
+- The repository provides a CLI pipeline via `scripts/run_pipeline.py`, a readiness check via `scripts/check_readiness.py`, and a local demo via `scripts/run_gradio_demo.py`.
+- Module 3 face restoration is not part of the main operational flow.
+- `demo3` is a golden smoke/regression case for demonstration and sanity checking, not a full benchmark over the real old-photo set.
 
 ## What Is Implemented
 
-- Segmenter kiểu U-Net có Attention Gate cho Module 1.
-- Hybrid mask gồm `dl mask + cv mask + repair_wide_v1`.
-- Wrapper gọi official/pretrained LaMa qua external runtime hoặc subprocess.
-- CLI pipeline chính qua `scripts/run_pipeline.py`.
-- Local Gradio demo qua `scripts/run_gradio_demo.py`.
-- Readiness check cho dependency, config và checkpoint path.
-- Golden artifacts nhỏ cho `demo3` để phục vụ smoke/regression.
+- A U-Net style segmenter with Attention Gate for Module 1.
+- A hybrid mask made from `dl mask + cv mask + repair_wide_v1`.
+- An external wrapper for official/pretrained LaMa.
+- A main pipeline CLI at `scripts/run_pipeline.py`.
+- A local Gradio demo at `scripts/run_gradio_demo.py`.
+- Readiness checks for dependencies, configuration, and checkpoint paths.
+- Small golden artifacts for `demo3` to support smoke/regression checks.
 
 ## Module 1 Safe Claims
 
-- Final operational/reproducible checkpoint đang được tham chiếu an toàn là `R013_REPRO`.
-- Bộ dữ liệu `R013` xuất phát từ `120` ảnh, nhưng chỉ có `118` cặp ảnh-mask hợp lệ trong `masks_fixed`.
-- Hai ảnh thiếu `masks_fixed` là `real_0099` và `real_0112`.
-- Split cố định dùng trong tóm tắt tái lập là `83 / 18 / 17` cho `train / val / test`.
-- `R013_REPRO` khởi tạo từ `R011_REPRO`, không khởi tạo từ `R012_REPRO`.
-- Threshold chính để trình bày và fair comparison là `0.50`.
-- Các metric có bằng chứng mạnh nhất hiện tại cho Module 1 là `IoU`, `F1`, `Precision`, `Recall`.
+- The final operational/reproducible checkpoint reference is `R013_REPRO`.
+- The `R013` dataset started from `120` images, but only `118` valid image-mask pairs exist in `masks_fixed`.
+- The missing `masks_fixed` entries are `real_0099` and `real_0112`.
+- The fixed split used in reproduction summaries is `83 / 18 / 17` for `train / val / test`.
+- `R013_REPRO` initializes from `R011_REPRO`, not from `R012_REPRO`.
+- The main threshold for reporting and fair comparison is `0.50`.
+- The strongest evidenced Module 1 metrics are `IoU`, `F1`, `Precision`, and `Recall`.
 
 ## What Is Experimental
 
-- `R012` chỉ là một nhánh thực nghiệm với `15` manual samples.
-- `R012` không vượt `R011` một cách thuyết phục và không được dùng làm init cho `R013`.
-- Các ghi chú về threshold rất thấp hoặc chế độ “sensitive” chỉ nên xem là mode suy luận tùy chọn, không phải claim metric chính.
-- Một phần tài liệu evaluation và ablation trong repo submission vẫn ở trạng thái tối thiểu và sẽ được hoàn thiện khi có thêm artifact tương ứng.
+- `R012` is an experimental branch with `15` manual samples.
+- `R012` does not outperform `R011` convincingly and is not used as the initialization checkpoint for `R013`.
+- Notes about very low thresholds or highly sensitive modes should be treated as optional inference modes, not as the main metric claim.
+- Some evaluation and ablation material is still minimal and should not be interpreted as a complete evaluation stack.
 
 ## What Is Future Work
 
-- Fine-tune LaMa với artifact huấn luyện đầy đủ.
-- LPIPS, FID và masked-region LPIPS.
-- Đánh giá định lượng end-to-end đầy đủ cho toàn pipeline.
-- Module 3 face restoration hoàn chỉnh trong repo submission.
-- Identity-preservation metrics cho face restoration.
-- Colorization, super-resolution, ONNX/TensorRT, tiling cho ảnh độ phân giải cao.
+- LaMa fine-tuning with complete training artifacts.
+- LPIPS, FID, and masked-region LPIPS.
+- Full end-to-end quantitative evaluation for the entire pipeline.
+- A complete Module 3 face restoration flow.
+- Identity-preservation metrics for face restoration.
+- Colorization, super-resolution, ONNX/TensorRT export, and tiling for high-resolution images.
 
-## Pipeline Tổng Quan
+## Pipeline Overview
 
 ```text
 Input image
@@ -76,68 +76,66 @@ Input image
   -> restored output
 ```
 
-Pipeline ưu tiên khả năng quan sát trung gian, giúp tách riêng lỗi ở segmentation, mask refinement và inpainting.
+The pipeline prioritizes intermediate observability so that segmentation, mask refinement, and inpainting errors can be isolated more easily.
 
 ## Evaluation Boundary
 
-- Repo submission hiện có bằng chứng mạnh nhất cho segmentation metrics của Module 1.
-- `demo3` chỉ là golden regression case để kiểm tra hành vi pipeline và smoke/demo.
-- Không claim rằng repo hiện đã hoàn tất `LPIPS`, `FID`, `masked-region LPIPS` hoặc full quantitative end-to-end evaluation.
-- Không claim “khôi phục hoàn hảo ảnh cũ”.
+- The strongest quantitative evidence in this repository is for Module 1 segmentation metrics.
+- `demo3` is a golden regression case for pipeline behavior and smoke/demo checks.
+- This repository does not claim completed `LPIPS`, `FID`, `masked-region LPIPS`, or full quantitative end-to-end evaluation.
+- This repository does not claim perfect old photo restoration.
 
-## Checkpoint And Artifact Policy
+## Checkpoint and Artifact Policy
 
-- Checkpoint không commit vào Git theo mặc định.
-- Repo ưu tiên `external checkpoint path + manifest + SHA256`.
-- Checkpoint tham chiếu ngoài repo cho `R013_REPRO` được cấu hình qua local artifact root, ví dụ:
+- Checkpoints are not committed to Git by default.
+- The repository prefers `external checkpoint path + manifest + SHA256`.
+- The external checkpoint reference for `R013_REPRO` is configured through a local artifact root, for example:
   `<LOCAL_ARTIFACT_ROOT>/module1_retrain_sequence/R013_REPRO/best_iou.ckpt`
-- SHA256 của checkpoint `R013_REPRO`:
+- The SHA256 of the `R013_REPRO` checkpoint is:
   `5f3b340e38eba8290d2b8ca030bb51126308169f4e42087f46ddac0334e74203`
-- Config local như `configs/external_paths.yaml` vẫn là cấu hình theo máy và không nên commit. Dùng `configs/external_paths.example.yaml` và các manifest trong `artifacts/manifests/` để map local paths.
+- Local machine-specific configuration such as `configs/external_paths.yaml` should not be committed. Use `configs/external_paths.example.yaml` and the manifests under `artifacts/manifests/` to map local paths.
 
-## LaMa And Module 3 Caveats
+## LaMa and Module 3 Caveats
 
-- Repo submission dùng official/pretrained LaMa qua wrapper external runtime.
-- Không claim LaMa đã được fine-tune trong repo này.
-- Các loss như `L1`, `perceptual`, `adversarial` chỉ nên xem là hướng thiết kế hoặc future work nếu chưa có artifact fine-tune rõ ràng.
-- CodeFormer hiện chỉ nên được mô tả là optional, prototype hoặc future work tùy ngữ cảnh.
-- Không claim CodeFormer bảo toàn danh tính.
+- The repository uses official/pretrained LaMa through an external runtime wrapper.
+- It does not claim that LaMa was fine-tuned in this repository.
+- Losses such as `L1`, `perceptual`, and `adversarial` should be treated as design directions or future work unless fine-tuning artifacts are available.
+- CodeFormer should currently be described only as optional, prototype, or future work depending on context.
+- The repository does not claim CodeFormer identity preservation.
 
 ## Quickstart
 
-### 1. Tạo môi trường
+### 1. Create an environment
 
 ```bash
 python -m venv .venv
 ```
 
-### 2. Cài dependency
+### 2. Install dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 3. Tạo config local
+### 3. Create a local config
 
 ```bash
 copy configs\external_paths.example.yaml configs\external_paths.yaml
 ```
 
-### 4. Kiểm tra readiness
+### 4. Run readiness checks
 
 ```bash
 python scripts/check_readiness.py
 ```
 
-### 5. Chạy local demo
+### 5. Run the local demo
 
 ```bash
 python scripts/run_gradio_demo.py
 ```
 
-### 6. Chạy CLI auto-mask tối thiểu
-
-Ví dụ replay path hiện có cho `demo3`:
+### 6. Run the minimal auto-mask CLI example
 
 ```bash
 python scripts/run_pipeline.py ^
@@ -148,24 +146,24 @@ python scripts/run_pipeline.py ^
   --reference-mask examples/golden/demo3_r013_repair_wide/final_mask.png
 ```
 
-CLI trên dùng mặc định:
+The CLI uses these defaults:
 
 - `configs/inference.yaml`
 - `configs/checkpoints.yaml`
 - `configs/external_paths.yaml`
 
-Nếu external dependency chưa sẵn sàng, nên dừng ở bước `check_readiness.py` và xem thêm `docs/demo_script.md`, `docs/reproducibility.md`.
+If external dependencies are not ready, stop at `check_readiness.py` and review `docs/demo_script.md` and `docs/reproducibility.md`.
 
 ## Expected Outputs
 
-Khi chạy CLI/demo ở scope hiện tại, output chính thường gồm:
+Typical outputs in the current scope include:
 
-- predicted mask từ segmentation;
-- refined/hybrid mask sau `repair_wide_v1`;
-- restored image trước optional face module (`restored_before_face.png`);
-- `metadata.json` ghi cấu hình chạy, backend, threshold và các thống kê smoke/regression nếu có.
+- a predicted segmentation mask;
+- a refined/hybrid mask after `repair_wide_v1`;
+- a restored image before the optional face module (`restored_before_face.png`);
+- a `metadata.json` file with runtime configuration, backend, threshold, and smoke/regression statistics when available.
 
-Trong các smoke artifacts đang có, có thể thấy các đường dẫn output kiểu:
+Current smoke artifacts include output layouts such as:
 
 - `examples/outputs/seg_smoke_demo3/`
 - `examples/outputs/pipeline_smoke_demo3/`
@@ -182,14 +180,14 @@ scripts/
 src/old_photo_restoration/
 ```
 
-## Safe Claims And Limitations
+## Safe Claims and Limitations
 
-- Repo này mạnh nhất ở Module 1 segmentation và hybrid mask.
-- Module 2 hiện là pretrained LaMa wrapper, không phải LaMa fine-tune.
-- Module 3 chưa phải phần hoàn chỉnh của submission flow.
-- Demo, smoke và golden artifacts hiện phục vụ reproducibility tối thiểu và regression, không thay cho benchmark lớn.
-- `R013` phải được hiểu là `120` ảnh ban đầu nhưng chỉ `118` valid image-mask pairs.
-- `LPIPS`, `FID` và `masked-region LPIPS` chưa phải artifact hoàn chỉnh trong submission hiện tại.
-- Module 3 chưa có đánh giá định lượng cho identity preservation.
+- This repository is strongest on Module 1 segmentation and hybrid masking.
+- Module 2 is currently a pretrained LaMa wrapper, not a LaMa fine-tuning implementation.
+- Module 3 is not yet a complete operational flow.
+- Demo, smoke, and golden artifacts support minimal reproducibility and regression checking; they are not a replacement for a large benchmark.
+- `R013` should always be described as `120` initial images but only `118` valid image-mask pairs.
+- `LPIPS`, `FID`, and `masked-region LPIPS` are not complete artifacts in the current repository.
+- Module 3 does not yet have quantitative identity-preservation evaluation.
 
-Chi tiết claim/doc safety của Phase 1A được ghi tại `docs/PHASE1A_CLAIM_SAFETY_CHANGELOG.md`.
+Detailed claim-safety notes from the earlier documentation pass remain available in `docs/PHASE1A_CLAIM_SAFETY_CHANGELOG.md`.

@@ -21,37 +21,37 @@ def configure_utf8_stdio() -> None:
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description=(
-            "Safe CLI cho dataset status trong submission repo. "
-            "Script này không build dataset, không copy data và không tạo output mặc định."
+            "Inspect dataset lineage and expected local layout from manifests. "
+            "Training datasets are external artifacts and no dataset payload is created by default."
         )
     )
     subparsers = parser.add_subparsers(dest="command")
 
     status_parser = subparsers.add_parser(
         "status",
-        help="In dataset status theo manifest hiện có.",
+        help="Print dataset lineage and artifact status from the configured manifest.",
         description=(
-            "Hiển thị trạng thái dataset manifests và nhắc rằng full datasets là external, "
-            "không nằm trong Git của repo submission."
+            "Inspect dataset lineage, expected local layout, and artifact policy. "
+            "Full datasets are external artifacts and are not committed to Git."
         ),
     )
     status_parser.add_argument(
         "--datasets-manifest",
         type=Path,
         default=DEFAULT_DATASETS_MANIFEST,
-        help="Path tới datasets manifest CSV.",
+        help="Path to the datasets manifest CSV.",
     )
     status_parser.add_argument(
         "--repo-root",
         type=Path,
         default=Path("."),
-        help="Repo root để resolve path tương đối.",
+        help="Repository root used to resolve relative paths.",
     )
     status_parser.add_argument(
         "--json-output",
         type=Path,
         default=None,
-        help="Nếu truyền, ghi JSON summary ra path chỉ định.",
+        help="Optional path for writing a JSON summary.",
     )
     status_parser.set_defaults(handler=run_status)
     return parser
@@ -60,12 +60,12 @@ def build_parser() -> argparse.ArgumentParser:
 def read_manifest(path: Path) -> tuple[list[dict[str, str]], list[str]]:
     warnings: list[str] = []
     if not path.exists():
-        warnings.append(f"Thiếu datasets manifest: {path}")
+        warnings.append(f"Missing datasets manifest: {path}")
         return [], warnings
     with path.open("r", encoding="utf-8-sig", newline="") as handle:
         rows = [dict(row) for row in csv.DictReader(handle)]
     if not rows:
-        warnings.append(f"Datasets manifest rỗng: {path}")
+        warnings.append(f"Datasets manifest is empty: {path}")
     return rows, warnings
 
 
@@ -102,8 +102,8 @@ def run_status(args: argparse.Namespace) -> int:
     rows, warnings = read_manifest(manifest_path)
     dataset_sources = collect_dataset_sources(rows)
 
-    print("dataset_status_entrypoint")
-    print("full datasets are external and should not be committed to Git")
+    print("dataset_artifact_inspection")
+    print("training datasets are external artifacts and should not be committed to Git")
     print("manifest_path:", manifest_path)
     print("dataset_sources:")
     if warnings:
@@ -133,7 +133,7 @@ def run_status(args: argparse.Namespace) -> int:
         "warnings": warnings,
         "rows": summarize_rows(rows),
         "notes": [
-            "Full datasets are external and are not committed to the submission Git repo.",
+            "Full datasets are external artifacts and are not committed to the Git repository.",
             "Use data/README.md and docs/artifacts.md for policy details.",
         ],
     }
@@ -147,7 +147,7 @@ def main() -> int:
     parser = build_parser()
     args = parser.parse_args()
     if not hasattr(args, "handler"):
-        parser.error("Thiếu subcommand. Dùng `status` để xem dataset status.")
+        parser.error("Missing subcommand. Use `status` to inspect dataset lineage and artifact status.")
     return int(args.handler(args))
 
 

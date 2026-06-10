@@ -1,1 +1,1 @@
-"""Các thành phần segmentation cho submission."""
+"""Các thành phần segmentation cho project repository."""

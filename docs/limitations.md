@@ -2,31 +2,31 @@
 
 ## Current Scope
 
-Pipeline hiện tại của submission tập trung vào:
+The current pipeline focuses on:
 
-- segmentation cho vùng hư hại;
-- hybrid mask;
+- segmentation for damaged regions;
+- hybrid mask construction;
 - `repair_wide_v1`;
-- official/pretrained LaMa wrapper.
+- an official/pretrained LaMa wrapper.
 
-## What Is Not A Safe Claim Yet
+## What Is Not a Safe Claim Yet
 
-- LaMa fine-tune.
-- `LPIPS`, `FID`, `masked-region LPIPS`.
+- LaMa fine-tuning.
+- `LPIPS`, `FID`, and `masked-region LPIPS`.
 - Full quantitative end-to-end evaluation.
 - CodeFormer identity preservation.
-- Module 3 face restoration hoàn chỉnh trong repo submission.
-- Phong illumination như một phần implementation hiện có của repo submission.
+- A complete Module 3 face restoration flow.
+- Illumination handling as a completed implementation in the current repository.
 
-## Dataset And Experiment Caveats
+## Dataset and Experiment Caveats
 
-- `R013` phải được mô tả là `120` ảnh ban đầu nhưng chỉ `118` valid pairs.
-- `R012` chỉ là nhánh thực nghiệm với `15` manual samples.
-- `demo3` là golden regression case, không phải benchmark đại diện toàn bộ tập ảnh cũ thực.
+- `R013` must always be described as `120` initial images but only `118` valid pairs.
+- `R012` is only an experimental branch with `15` manual samples.
+- `demo3` is a golden regression case, not a benchmark representing the full real old-photo set.
 
 ## Future Work
 
-- Fine-tune LaMa với artifact đầy đủ.
+- LaMa fine-tuning with complete artifacts.
 - LPIPS/FID/masked-region LPIPS.
-- Hoàn thiện Module 3 ở mức end-to-end.
-- Bổ sung evaluation protocol đầy đủ hơn ngoài smoke/regression.
+- A stronger end-to-end Module 3 flow.
+- A more complete evaluation protocol beyond smoke/regression checks.

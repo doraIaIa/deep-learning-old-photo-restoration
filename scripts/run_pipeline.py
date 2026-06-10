@@ -21,7 +21,7 @@ from old_photo_restoration.pipeline import RestorationPipeline
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Chạy pipeline submission với mask-bypass hoặc auto-mask r013.")
+    parser = argparse.ArgumentParser(description="Run the restoration pipeline with mask bypass or automatic R013 masking.")
     parser.add_argument("--image", required=True, type=Path)
     parser.add_argument("--mask", type=Path, default=None)
     parser.add_argument("--output-dir", required=True, type=Path)
@@ -43,7 +43,7 @@ def resolve_path(path: Path | None) -> Path | None:
 def read_rgb(path: Path) -> np.ndarray:
     image_bgr = cv2.imread(str(path), cv2.IMREAD_COLOR)
     if image_bgr is None:
-        raise FileNotFoundError(f"Không đọc được ảnh: {path}")
+        raise FileNotFoundError(f"Could not read image: {path}")
     return cv2.cvtColor(image_bgr, cv2.COLOR_BGR2RGB)
 
 
@@ -72,7 +72,7 @@ def compare_images(output_path: Path, reference_path: Path) -> dict[str, Any]:
 def read_mask(path: Path) -> np.ndarray:
     mask = cv2.imread(str(path), cv2.IMREAD_UNCHANGED)
     if mask is None:
-        raise FileNotFoundError(f"Không đọc được mask: {path}")
+        raise FileNotFoundError(f"Could not read mask: {path}")
     if mask.ndim == 3:
         if mask.shape[2] == 4:
             mask = mask[:, :, :3]

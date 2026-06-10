@@ -1,29 +1,29 @@
 # Reproducibility
 
-## Reproducible Scope Hiện Tại
+## Current Reproducible Scope
 
-Repo submission hiện nhắm tới reproducibility tối thiểu cho:
+This repository currently targets minimal reproducibility for:
 
-- Module 1 segmentation theo checkpoint tham chiếu `R013_REPRO`;
-- pipeline `segmentation -> hybrid mask -> official/pretrained LaMa`;
-- golden regression case `demo3`.
+- Module 1 segmentation using the `R013_REPRO` checkpoint reference;
+- the pipeline `segmentation -> hybrid mask -> official/pretrained LaMa`;
+- the `demo3` golden regression case.
 
-## Module 1 Facts Cần Giữ Đúng
+## Module 1 Facts That Must Stay Accurate
 
-- `R013` có `120` ảnh ban đầu nhưng chỉ `118` valid image-mask pairs.
-- Hai ảnh thiếu `masks_fixed`: `real_0099`, `real_0112`.
-- Split cố định: `83 / 18 / 17`.
-- `R013_REPRO` init từ `R011_REPRO`.
-- Threshold chính cho báo cáo/fair comparison: `0.50`.
+- `R013` starts from `120` images but only `118` valid image-mask pairs exist.
+- The missing `masks_fixed` entries are `real_0099` and `real_0112`.
+- The fixed split is `83 / 18 / 17`.
+- `R013_REPRO` initializes from `R011_REPRO`.
+- The main threshold for reporting and fair comparison is `0.50`.
 
 ## External Artifacts Required
 
 - `configs/external_paths.yaml`
-- checkpoint segmentation ngoài repo
-- official LaMa repo và weight
-- optional CodeFormer repo và weight nếu người dùng muốn tự thử nhánh optional
+- an external segmentation checkpoint
+- the official LaMa repository and weights
+- the optional CodeFormer repository and weights if the user wants to explore that branch
 
-Checkpoint tham chiếu ngoài repo:
+External checkpoint reference:
 
 ```text
 <LOCAL_ARTIFACT_ROOT>/module1_retrain_sequence/R013_REPRO/best_iou.ckpt
@@ -35,20 +35,20 @@ SHA256:
 5f3b340e38eba8290d2b8ca030bb51126308169f4e42087f46ddac0334e74203
 ```
 
-## Minimal Replay Path For Demo3
+## Minimal Replay Path for Demo3
 
-### 1. Chuẩn bị external paths
+### 1. Prepare external paths
 
-- copy `configs/external_paths.example.yaml` thành `configs/external_paths.yaml`
-- điền path local cho LaMa runtime và checkpoint
+- Copy `configs/external_paths.example.yaml` to `configs/external_paths.yaml`.
+- Fill in the local paths for the LaMa runtime and checkpoint artifacts.
 
-### 2. Kiểm tra readiness
+### 2. Run readiness checks
 
 ```bash
 python scripts/check_readiness.py
 ```
 
-### 3. Replay auto-mask smoke cho `demo3`
+### 3. Replay the auto-mask smoke case for `demo3`
 
 ```bash
 python scripts/run_pipeline.py ^
@@ -65,7 +65,7 @@ Expected outputs:
 - `restored_before_face.png`
 - `metadata.json`
 
-### 4. Replay mask-bypass smoke cho `demo3`
+### 4. Replay the mask-bypass smoke case for `demo3`
 
 ```bash
 python scripts/run_pipeline.py ^
@@ -76,19 +76,19 @@ python scripts/run_pipeline.py ^
   --reference examples/golden/demo3_r013_repair_wide/restored_before_face.png
 ```
 
-Expected behavior ở mức smoke/regression:
+Expected smoke/regression behavior:
 
-- output cùng kích thước với golden reference
-- có `metadata.json`
-- với smoke artifact hiện có, mask-bypass path cho thấy `MAE = 0` và `PSNR = inf`
+- output size matches the golden reference;
+- `metadata.json` is produced;
+- current smoke artifacts show `MAE = 0` and `PSNR = inf` for the mask-bypass path.
 
 ## Evaluation Boundary
 
-- Có thể tái sử dụng `demo3` cho smoke/regression.
-- Không nên dùng README/docs của repo submission để suy ra rằng LPIPS/FID hoặc full end-to-end evaluation đã hoàn tất.
-- Các metric có bằng chứng mạnh nhất hiện tại vẫn là segmentation metrics của Module 1.
+- `demo3` can be reused for smoke/regression checks.
+- README and docs should not be interpreted as evidence that LPIPS/FID or full end-to-end evaluation has been completed.
+- The strongest quantitative evidence currently remains the Module 1 segmentation metrics.
 
 ## Known Boundaries
 
-- Tài liệu này mô tả replay path tối thiểu cho smoke/regression, không phải protocol tái lập đầy đủ toàn bộ lịch sử thực nghiệm.
-- `R013_REPRO` là checkpoint tham chiếu claim safety mạnh nhất hiện tại, nhưng repo submission không commit checkpoint đó vào Git theo mặc định.
+- This document describes a minimal smoke/regression replay path, not a full reproduction protocol for the entire research history.
+- `R013_REPRO` is the strongest claim-safe checkpoint reference, but the checkpoint binary itself is not committed to Git by default.

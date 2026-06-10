@@ -1,64 +1,64 @@
 # Artifact Packaging
 
-Tài liệu này mô tả cách repo đóng gói bằng chứng artifact mà không biến repository thành kho chứa checkpoint, dataset research hoặc runtime outputs lớn.
+This document explains how the repository packages artifact evidence without turning the source tree into a storage location for checkpoints, research datasets, or large runtime outputs.
 
 ## Module 1 checkpoint lineage
 
-- Checkpoint tham chiếu mạnh nhất cho Module 1 là `R013_REPRO`.
-- Source-of-truth ngoài repo được cấu hình qua local artifact path ngoài Git; xem thêm:
+- The strongest operational checkpoint reference for Module 1 is `R013_REPRO`.
+- The source of truth lives outside Git and is typically mapped through a local artifact root, for example:
 
 ```text
 <LOCAL_ARTIFACT_ROOT>/module1_retrain_sequence/R013_REPRO/best_iou.ckpt
 ```
 
-- Workspace local hiện có checkpoint Module 1 tại:
+- A local workspace can map that checkpoint into the public-facing skeleton:
 
 ```text
-checkpoints/segmenter/seg-unet-attn-r013-gen120-fixed118-local/best_val_iou.pth
+checkpoints/segmenter/r013_final/
 ```
 
-- Binary checkpoint vẫn là local ignored artifact và không nên commit.
-- Dataset lineage và artifact paths chi tiết được ghi trong `artifacts/manifests/` và được ánh xạ cục bộ qua `configs/external_paths.example.yaml`.
-- Public-facing checkpoint skeleton được documented tại `checkpoints/segmenter/r013_final/` và `checkpoints/segmenter/r009_synthetic_pretrain/`; các skeleton này không chứa binary.
+- The checkpoint binary remains a local ignored artifact and should not be committed.
+- Dataset lineage and artifact paths are documented under `artifacts/manifests/` and can be mapped locally through `configs/external_paths.example.yaml`.
+- The public checkpoint skeleton is documented in `checkpoints/segmenter/r013_final/` and `checkpoints/segmenter/r009_synthetic_pretrain/`. Those folders do not contain checkpoint binaries.
 
 ## Synthetic pretraining data lineage
 
-Synthetic pretraining lineage cho Module 1 được mô tả bằng manifest-driven provenance:
+The synthetic pretraining lineage for Module 1 is documented as manifest-driven provenance:
 
-1. Clean images từ DIV2K
-2. Crack-source imagery và annotations từ CrackForest
-3. Processed crack bank dưới dạng RGBA assets
-4. Synthetic dataset `ds-crack3d-512-n1000-v001`
-5. Historical synthetic runs `R006` đến `R009`
+1. Clean images from DIV2K
+2. Crack-source imagery and annotations from CrackForest
+3. A processed crack bank stored as RGBA assets
+4. The synthetic dataset `ds-crack3d-512-n1000-v001`
+5. Historical synthetic runs `R006` through `R009`
 
-`R009` giữ vai trò synthetic pretraining/init stage. Đây không phải checkpoint real-domain cuối cùng.
+`R009` is the synthetic pretraining or initialization stage. It should not be described as the final real-domain checkpoint.
 
 ## Real-domain fine-tuning progression
 
-Sau synthetic initialization:
+After synthetic initialization:
 
-- `R010_REPRO`: fine-tune trên `old_photo_pairs_10_hq` với thin masks
-- `R011_REPRO`: fine-tune trên repair-mask target
-- `R012_REPRO`: nhánh manual-mask mang tính experimental
-- `R013_REPRO`: final controlled reproduction cho Module 1 trên `r013_finetune_set`
+- `R010_REPRO`: fine-tuning on `old_photo_pairs_10_hq` with thin masks
+- `R011_REPRO`: fine-tuning on repair-mask targets
+- `R012_REPRO`: an experimental manual-mask branch
+- `R013_REPRO`: the final controlled Module 1 reproduction on `r013_finetune_set`
 
-## Dataset và checkpoint policy
+## Dataset and checkpoint policy
 
-- Full datasets là external và không commit vào Git.
-- Checkpoint binaries là local ignored artifacts và không commit vào Git.
-- Repo chỉ giữ manifests, split metadata, docs assets nhỏ và sample tối thiểu.
+- Full datasets are external and are not committed to Git.
+- Checkpoint binaries are local ignored artifacts and are not committed to Git.
+- The repository keeps manifests, split metadata, small documentation assets, and minimal examples only.
 
 ## Manifest-driven verification
 
-Manifest trong `artifacts/manifests/` và `data/manifests/` mô tả:
+The manifests under `artifacts/manifests/` and `data/manifests/` describe:
 
 - dataset provenance
 - synthetic lineage
 - reproduction run lineage
 - checkpoint availability
-- artifact nào external, historical hoặc local-only
+- whether an artifact is external, historical, or local-only
 
-Kiểm tra manifest:
+You can validate the manifests with:
 
 ```bash
 python -B scripts/verify_artifacts.py check-checkpoints --repo-root .
@@ -68,8 +68,8 @@ python -B scripts/verify_artifacts.py check-all --repo-root .
 
 ## Boundary
 
-- Repo này không tự tải checkpoint.
-- Repo này không tự copy dataset.
-- Repo này không đóng gói full training reproduction tự động.
-- Repo này không claim LaMa fine-tune.
-- Repo này không claim LPIPS/FID hoàn chỉnh nếu artifact tương ứng chưa được đóng gói.
+- The repository does not auto-download checkpoints.
+- The repository does not auto-copy datasets.
+- The repository does not package full automatic training reproduction.
+- The repository does not claim LaMa fine-tuning.
+- The repository does not claim completed LPIPS/FID coverage unless matching artifacts are added later.

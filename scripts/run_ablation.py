@@ -16,32 +16,32 @@ def configure_utf8_stdio() -> None:
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description=(
-            "Protocol/status runner cho ablation trong repo submission. "
-            "Script này không phải full LPIPS/FID ablation runner và không tự chạy pipeline/eval thật trong Phase 1B."
+            "Summarize the documented ablation protocol and available artifact coverage. "
+            "This command does not execute the restoration pipeline."
         )
     )
     parser.add_argument(
         "--mode",
         default="protocol_status",
         choices=["protocol_status", "smoke_manifest"],
-        help="Mode hiện tại chỉ mô tả protocol và trạng thái artifact; không chạy pipeline thật.",
+        help="Describe protocol scope and artifact coverage only; no pipeline execution is performed.",
     )
     parser.add_argument(
         "--output-dir",
         type=Path,
         default=None,
-        help="Nếu truyền, script sẽ ghi protocol/status ra thư mục này.",
+        help="Optional directory for writing the protocol summary files.",
     )
     parser.add_argument(
         "--write-protocol-status",
         action="store_true",
-        help="Bật cờ này hoặc truyền --output-dir để ghi JSON/Markdown status ra ngoài repo.",
+        help="Write JSON/Markdown protocol summaries when --output-dir is provided.",
     )
     parser.add_argument(
         "--available-artifacts-root",
         type=Path,
         default=None,
-        help="Chỉ kiểm tra artifact tồn tại/không tồn tại dưới root này; không chạy pipeline.",
+        help="Optional root used to check whether documented artifacts exist. No pipeline execution is performed.",
     )
     return parser
 
@@ -54,27 +54,27 @@ def build_protocol_definition() -> list[dict[str, str]]:
     return [
         {
             "case_id": "opencv_baseline",
-            "description": "OpenCV baseline nếu repo thực sự có backend và artifact tương ứng.",
+            "description": "OpenCV baseline if the repository has the required backend and matching artifacts.",
             "status": "protocol_only",
         },
         {
             "case_id": "unet_mask_plus_classical_inpaint",
-            "description": "Mask từ segmentation rồi ghép backend cổ điển nếu có implementation thật.",
+            "description": "Segmentation mask combined with a classical inpainting backend when a real implementation exists.",
             "status": "protocol_only",
         },
         {
             "case_id": "ground_truth_mask_plus_pretrained_lama",
-            "description": "Oracle/ground-truth mask + official/pretrained LaMa.",
+            "description": "Oracle or ground-truth mask with official/pretrained LaMa.",
             "status": "partially evidenced by smoke artifacts",
         },
         {
             "case_id": "predicted_mask_plus_pretrained_lama",
-            "description": "Predicted/hybrid mask + official/pretrained LaMa.",
+            "description": "Predicted or hybrid mask with official/pretrained LaMa.",
             "status": "partially evidenced by smoke artifacts",
         },
         {
             "case_id": "full_pipeline_plus_optional_face_module",
-            "description": "Full pipeline + face module nếu sau này có evidence đủ mạnh.",
+            "description": "Full pipeline with the optional face module if stronger evidence is added later.",
             "status": "future_work_or_optional",
         },
     ]
@@ -82,11 +82,11 @@ def build_protocol_definition() -> list[dict[str, str]]:
 
 def build_known_limitations() -> list[str]:
     return [
-        "Full quantitative ablation chưa được đóng gói trong repo submission.",
-        "LPIPS/FID/masked-region LPIPS chưa có artifact đủ để claim đã hoàn tất.",
-        "LaMa hiện là official/pretrained wrapper, không phải LaMa fine-tune.",
-        "Module 3/CodeFormer không được claim identity preservation.",
-        "Script này chỉ là protocol/status runner trong Phase 1B, không phải full experimental orchestrator.",
+        "Full quantitative ablation is not yet packaged as portable artifacts in the repository.",
+        "LPIPS, FID, and masked-region LPIPS do not yet have enough artifacts to support completed claims.",
+        "LaMa is currently used as an official/pretrained wrapper, not as a fine-tuned model.",
+        "Module 3 and CodeFormer should not be described as identity-preserving.",
+        "This command summarizes protocol scope and artifact coverage; it is not a full experimental orchestrator.",
     ]
 
 
@@ -119,9 +119,9 @@ def build_status_payload(mode: str, artifacts_root: Path | None) -> dict[str, ob
         "known_limitations": build_known_limitations(),
         "artifacts_root_checked": str(artifacts_root) if artifacts_root is not None else None,
         "artifact_checks": inspect_artifacts(artifacts_root),
-        "phase1b_note": (
-            "Script này hiện mô tả protocol/status cho ablation và không chạy full LPIPS/FID/full ablation. "
-            "Các runner đánh giá sâu hơn chỉ nên bổ sung ở phase sau khi có evidence tương ứng."
+        "runner_note": (
+            "This command documents the ablation protocol and current artifact coverage. "
+            "Additional evaluation runners should be added only when matching evidence is available."
         ),
     }
 
@@ -170,7 +170,7 @@ def main() -> int:
     artifacts_root = resolve_optional_path(args.available_artifacts_root)
 
     if args.write_protocol_status and output_dir is None:
-        raise SystemExit("Thiếu --output-dir khi dùng --write-protocol-status.")
+        raise SystemExit("Missing --output-dir while using --write-protocol-status.")
 
     payload = build_status_payload(args.mode, artifacts_root)
     should_write = args.write_protocol_status or output_dir is not None
@@ -181,8 +181,8 @@ def main() -> int:
         print(f"ablation_protocol_status_md: {output_dir / 'ablation_protocol_status.md'}")
     else:
         print("protocol_status_only")
-        print("Script này không chạy full ablation trong Phase 1B.")
-        print("Dùng --output-dir để ghi protocol/status ra file.")
+        print("This command does not execute a full ablation run.")
+        print("Use --output-dir to write the protocol summary to files.")
     return 0
 
 

@@ -1,3 +1,3 @@
 # Architecture
 
-Submission repo được tách thành các lớp cấu hình, segmentation, inpainting, face restoration, evaluation, và utilities. Phase hiện tại mới dựng contract giữa các module để chuẩn bị migrate nhỏ giọt từ repo research.
+The repository is organized around configuration, segmentation, inpainting, face restoration, evaluation, and utility layers. The current architecture prioritizes clear module boundaries so that inference, artifact verification, and minimal reproducibility can be inspected independently.
