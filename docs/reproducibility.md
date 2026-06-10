@@ -93,3 +93,9 @@ Expected smoke/regression behavior:
 - This document describes a minimal smoke/regression replay path, not a full reproduction protocol for the entire research history.
 - `R013_REPRO` is the strongest claim-safe checkpoint reference, but the checkpoint binary itself is not committed to Git by default.
 
+
+
+## Artifact Layout Note
+- examples/golden/ is the frozen expected reference.
+- examples/outputs/ is generated when running local examples.
+- outputs/ is the recommended local root for new generated experiments.

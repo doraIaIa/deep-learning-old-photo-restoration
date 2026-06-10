@@ -628,3 +628,12 @@ Repo này được phát triển cho mục đích học thuật trong môn **Dee
 ## License
 
 Academic course project. Check the licenses of external dependencies and pretrained weights before redistribution or use outside the academic setting.
+
+
+## Output and Asset Policy
+
+- Runtime generated outputs belong in outputs/ or examples/outputs/.
+- Frozen regression references belong in examples/golden/.
+- Curated images used by README/docs belong in docs/assets/.
+- Historical experiment outputs should first be collected under experiment_value/; only a small selected subset should be copied into docs/assets/history/ or docs/assets/experiments/ when needed for documentation.
+- Checkpoint binaries and generated outputs are not committed by default.
