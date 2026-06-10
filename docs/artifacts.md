@@ -73,3 +73,10 @@ python -B scripts/verify_artifacts.py check-all --repo-root .
 - The repository does not package full automatic training reproduction.
 - The repository does not claim LaMa fine-tuning.
 - The repository does not claim completed LPIPS/FID coverage unless matching artifacts are added later.
+
+### Segmenter Checkpoints (R006-R013)
+The segmenter checkpoints follow canonical experiment-run names (e.g., seg-unet-attn-r013-gen120-fixed118-local) to precisely map to historical logs and metrics.
+- **R006-R008**: These are skeleton-only folders because the binary weights are missing from the audit, preserving lineage evidence.
+- **R009-R013**: These are available locally if copied from <LOCAL_ARTIFACT_ROOT>.
+- **Current Alias**: checkpoints/segmenter/current/ is an alias conceptually pointing to the selected R013 canonical folder without duplicating binaries.
+- **Binary Policy**: All checkpoint binaries (.ckpt, .pth) are strictly **local ignored** and **not committed** to the repository to maintain claim-safety and small repository size.
