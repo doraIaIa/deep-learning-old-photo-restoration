@@ -51,3 +51,36 @@ This project repository does not bundle the full research history. This document
 - LPIPS/FID/masked-region LPIPS evaluation.
 - Full end-to-end quantitative evaluation.
 - A complete Module 3 face restoration flow.
+
+
+## Training Lineage: R006-R013 Segmenter Development
+
+| Run | Objective | Data / Label Target | Key Result | Decision |
+|---|---|---|---|---|
+| **R006** | Baseline (synthetic) | Synthetic (50 ep) | Val IoU: 0.3852, Val F1: 0.5249 (thr 0.25) | Recall weak; move to augmentation |
+| **R007** | Strong augmentation | Synthetic aug | Val IoU: 0.3912, Val F1: 0.5257 (thr 0.20) | Precision improved; recall weak; change loss |
+| **R008** | BCE + Tversky loss | Synthetic aug | Val IoU: 0.4064, Val F1: 0.5492 (thr 0.70) | Recall improved; extend training |
+| **R009** | Synthetic pretrain (60 ep) | Synthetic aug | Val IoU: 0.4171, Val F1: 0.5595. **Real Test IoU: 0.0022** | Severe domain gap on real photos; use as base |
+| **R010** | Real-domain fine-tune | Real (thin masks) | Real Test IoU: 0.2927, Test F1: 0.4528 (thr 0.70) | Domain gap overcome; masks too thin for LaMa |
+| **R011** | Repair mask fine-tune | Real (repair masks) | Test IoU: 0.4478, Test F1: 0.6186 | Stable baseline; missed extremely thin cracks |
+| **R012** | Manual mask constraint | Manual (15 samples) | Test IoU: 0.2846, Test F1: 0.4430 | Overfit/small-data negative experiment |
+| **R013** | Operational segmenter | Fixed 118 pairs | Val F1: 0.5502, Test IoU: 0.3456 (thr 0.50) | Selected operational checkpoint (seg-unet-attn-r013-gen120-fixed118-local) |
+
+## Failure-Driven Design Decisions
+
+- **Modular Pipeline**: Earlier direct end-to-end restoration attempts motivated the decomposition into a modular segmentation and inpainting pipeline to mitigate regression bias.
+- **Inpainting Dependency**: LaMa is utilized strictly as a pretrained wrapper subprocess. No fine-tuning is performed on LaMa to avoid unstable generative training sequences.
+
+## Training Data Evolution
+
+- **Initial Datasets Rejected**: Datasets similar to CrackForest or ds-crack3d-512-n0200-v001 were rejected due to mask area mismatch (e.g., asphalt cracks are thicker than photo scratches).
+- **Synthetic Pretraining Data**: Adopted Crack Bank RGBA assets combined with physically grounded 3D degradation, normal maps, Phong illumination, and alpha blending over DIV2K backgrounds.
+- **Domain Gap & Fine-tuning**: The severe domain gap observed in R009 (IoU dropping to 0.0022 on real test) necessitated a real-domain fine-tuning sequence (R010, R011, R013) using curated real photographs.
+
+
+## Mask and Threshold Strategy
+
+- **Loss Progression**: Initially started with BCE+Dice. To heavily penalize false negatives, R008 introduced Tversky Loss (alpha=0.3, beta=0.7). R011 increased beta=0.8 for recall-oriented repair masks.
+- **Threshold Evolution**: Inference thresholds varied dynamically based on model confidence distribution (e.g., R007 at 0.20, R009 at 0.90). The final R013 segmenter uses a stable operational threshold of 0.50.
+- **Hybrid Mask Refinement**: The deep learning mask is unioned with a classical CV branch (CLAHE, Blackhat, Canny). The 
+epair_wide_v1 strategy then applies morphological closing, connection, and dilation to prepare the final mask for inpainting.
