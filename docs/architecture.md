@@ -1,5 +1,11 @@
 # Architecture
 
+> **Tóm tắt tiếng Việt**
+> 
+> - Tài liệu này mô tả kiến trúc kỹ thuật của đường ống phục chế ảnh cũ (old photo restoration pipeline).
+> - Phân chia thành các module độc lập: phân vùng (segmentation), khôi phục (inpainting) và phục chế khuôn mặt (face restoration).
+> - Các thuật ngữ kỹ thuật, tên model và checkpoint được giữ nguyên tiếng Anh để khớp với source code.
+
 The repository is organized around configuration, segmentation, inpainting, face restoration, evaluation, and utility layers. The current architecture prioritizes clear module boundaries so that inference, artifact verification, and minimal reproducibility can be inspected independently.
 
 
@@ -14,8 +20,7 @@ The repository is organized around configuration, segmentation, inpainting, face
 
 To mitigate false negatives from the deep learning segmenter on extremely thin scratches, a hybrid refinement strategy is used:
 - Combines the deep learning mask with a classical computer vision branch (utilizing CLAHE, morphological Blackhat, and Canny edge detection).
-- The 
-epair_wide_v1 policy ensures the union mask undergoes morphological closing, connecting, and dilation to fully encompass the defect area before inpainting.
+- The repair_wide_v1 policy ensures the union mask undergoes morphological closing, connecting, and dilation to fully encompass the defect area before inpainting.
 - This subsystem provides conservative context but does not claim perfect pixel-level accuracy.
 - The repair_wide_v1 policy widens and connects narrow scratch regions before inpainting, using conservative morphology rather than claiming perfect pixel-level masks.
 
@@ -29,4 +34,4 @@ The pipeline leverages LaMa (Resolution-robust Large Mask Inpainting) as the bac
 
 For photos containing degraded faces, an optional face enhancement module is available:
 - **Components**: Combines RetinaFace for face detection and CodeFormer for face restoration.
-- **Usage**: This module is dependency-gated and strictly optional. It does not provide an absolute identity preservation guarantee and is not considered part of the core scratch-removal evaluation.
+- **Usage**: This module is dependency-gated and strictly optional. It provides no identity-preservation guarantee and is not considered part of the core scratch-removal evaluation.
