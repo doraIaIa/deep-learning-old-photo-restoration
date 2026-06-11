@@ -49,7 +49,7 @@ class RestorationPipeline:
     def __init__(self, config: ProjectConfig) -> None:
         self.config = config
         self.inpainter = LamaInpainter(config.lama)
-        self.segmenter = SegmentationPredictor(config)
+        self.segmenter = None # will be lazy initialized if needed
 
     def run(
         self,
@@ -58,7 +58,25 @@ class RestorationPipeline:
         mask_path: Path | None = None,
         face_mode: str = "off",
         golden_reference: Path | None = None,
+        segmenter_arch: str = "r013_custom_attnunet",
+        segmenter_checkpoint: Path | None = None,
+        segmenter_threshold: float | None = None,
+        segmenter_dilation: int | None = None,
     ) -> PipelineResult:
+        resolved_checkpoint = segmenter_checkpoint
+        if segmenter_arch == "r014_resnet34" and not resolved_checkpoint:
+            import os
+            env_ckpt = os.environ.get("R014_SEGMENTER_CHECKPOINT")
+            default_ckpt = (Path(__file__).resolve().parents[2] / "checkpoints/segmenter/seg-unet-resnet34-r014-s42/best_val_iou.pth").resolve()
+            if env_ckpt:
+                resolved_checkpoint = Path(env_ckpt)
+            elif default_ckpt.exists():
+                resolved_checkpoint = default_ckpt
+            else:
+                raise FileNotFoundError("R014 checkpoint not found. Set R014_SEGMENTER_CHECKPOINT or place the checkpoint at checkpoints/segmenter/seg-unet-resnet34-r014-s42/best_val_iou.pth.")
+        
+        if self.segmenter is None or self.segmenter.arch != segmenter_arch or (resolved_checkpoint and self.segmenter.checkpoint_path != Path(resolved_checkpoint)):
+            self.segmenter = SegmentationPredictor(self.config, arch=segmenter_arch, checkpoint_override=resolved_checkpoint)
         resolved_image = image_path.resolve()
         resolved_output_dir = output_dir.resolve()
 
@@ -71,10 +89,25 @@ class RestorationPipeline:
         auto_metadata: dict[str, Any] = {}
 
         if mask_path is None:
+            if segmenter_threshold is not None:
+                th = segmenter_threshold
+            elif segmenter_arch == "r014_resnet34":
+                th = 0.30
+            else:
+                th = float(self.config.checkpoint.threshold_balanced)
+                
+            if segmenter_dilation is not None:
+                dil = segmenter_dilation
+            elif segmenter_arch == "r014_resnet34":
+                dil = 1
+            else:
+                dil = 0
+                
             hybrid = build_hybrid_mask(
                 image_path=resolved_image,
                 predictor=self.segmenter,
-                threshold=float(self.config.checkpoint.threshold_balanced),
+                threshold=th,
+                dilation_radius=dil,
             )
             dl_mask_path = resolved_output_dir / "dl_mask.png"
             cv_mask_path = resolved_output_dir / "cv_mask.png"
@@ -99,6 +132,8 @@ class RestorationPipeline:
                 "rejected_cv_over_cv_ratio": hybrid["stats"]["rejected_cv_over_cv_ratio"],
                 "cv_profile": "notebook_v7_candidate",
                 "checkpoint_sha256": self.segmenter.checkpoint_sha256,
+                "segmentation_arch": segmenter_arch,
+                "segmentation_dilation": dil,
             }
         else:
             resolved_mask = mask_path.resolve()
