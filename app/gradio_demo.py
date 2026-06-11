@@ -114,10 +114,6 @@ def run_auto_mask_pipeline(
         segmenter_checkpoint = None
         if "R014" in segmenter_choice:
             segmenter_arch = "r014_resnet34"
-            env_ckpt = os.environ.get("R014_SEGMENTER_CHECKPOINT")
-            if not env_ckpt or not Path(env_ckpt).exists():
-                return image, None, None, {"error": "Missing checkpoint"}, "R014 checkpoint not found. Set R014_SEGMENTER_CHECKPOINT or provide checkpoint path."
-            segmenter_checkpoint = Path(env_ckpt)
 
         result = pipeline.run(
             image_path=input_path,

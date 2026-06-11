@@ -196,19 +196,25 @@ cp configs/external_paths.example.yaml configs/external_paths.yaml
 
 Chỉnh `configs/external_paths.yaml` để trỏ tới LaMa runtime và optional CodeFormer runtime trên máy local.
 
-### 6.4. Đặt checkpoint R013
+### 6.4. Đặt checkpoint
+
+**Operational checkpoint R013 (Mặc định)**:
 
 Expected local path:
-
 ```text
 checkpoints/segmenter/seg-unet-attn-r013-gen120-fixed118-local/best_val_iou.pth
 ```
+Expected SHA256: `a63381ade991cb936e2262e80fa6001c3a1fe9d10b1075be0d3c7f617c0a5725`
 
-Expected SHA256:
+**Experimental checkpoint R014 (Tùy chọn cho demo)**:
 
+R014 là một mô hình ResNet-34 thử nghiệm mang lại IoU phân vùng cao hơn. *Lưu ý: Checkpoint R014 KHÔNG được bao gồm trong repository git do kích thước lớn.*
+Để chạy R014 trên local, bạn cần tạo thư mục và tải checkpoint (được cung cấp riêng) vào đường dẫn sau:
 ```text
-a63381ade991cb936e2262e80fa6001c3a1fe9d10b1075be0d3c7f617c0a5725
+checkpoints/segmenter/seg-unet-resnet34-r014-s42/best_val_iou.pth
 ```
+Hoặc cấu hình biến môi trường `R014_SEGMENTER_CHECKPOINT` trỏ tới file `.pth` của bạn (tham khảo `.env.example`).
+Expected SHA256: `e1d84ced2e3aac6fd89bbe48bd6149cc445cc7308b03887ac3f66de2352924c2`
 
 ### 6.5. Kiểm tra readiness
 
@@ -246,7 +252,17 @@ python scripts/run_pipeline.py \
   --reference-mask examples/golden/demo3_r013_repair_wide/final_mask.png
 ```
 
-*Lưu ý*: Mặc định pipeline sẽ chạy với segmenter `r013_custom_attnunet` (được khuyên dùng làm baseline an toàn). Bạn có thể thử nghiệm với ResNet-34 encoder bằng cách truyền cờ `--segmenter-arch r014_resnet34`. R014 ResNet-34 improves segmentation IoU/F1 and, with a 3x3 dilation post-processing policy, becomes a strong candidate for demo restoration. (Yêu cầu biến môi trường `R014_SEGMENTER_CHECKPOINT`).
+*Lưu ý*: Mặc định pipeline sẽ chạy với segmenter `r013_custom_attnunet` (được khuyên dùng làm baseline an toàn). 
+Bạn có thể thử nghiệm với ResNet-34 encoder bằng cờ `--segmenter-arch r014_resnet34`. R014 kết hợp với cấu hình `threshold 0.30` và `3x3 dilation` mang lại chất lượng phục hồi demo tốt hơn:
+
+**Auto-mask mode (R014 ResNet-34 Experimental)**:
+```bash
+python scripts/run_pipeline.py \
+  --image examples/inputs/demo3.png \
+  --output-dir examples/outputs/demo3_r014 \
+  --segmenter-arch r014_resnet34
+```
+*(Nếu đã cấu hình đúng đường dẫn theo bước 6.4, R014 sẽ tự động tải checkpoint, threshold `0.30` và dilation `1`.)*
 
 **Gradio demo**:
 

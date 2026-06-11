@@ -63,8 +63,20 @@ class RestorationPipeline:
         segmenter_threshold: float | None = None,
         segmenter_dilation: int | None = None,
     ) -> PipelineResult:
-        if self.segmenter is None or self.segmenter.arch != segmenter_arch or (segmenter_checkpoint and self.segmenter.checkpoint_path != Path(segmenter_checkpoint)):
-            self.segmenter = SegmentationPredictor(self.config, arch=segmenter_arch, checkpoint_override=segmenter_checkpoint)
+        resolved_checkpoint = segmenter_checkpoint
+        if segmenter_arch == "r014_resnet34" and not resolved_checkpoint:
+            import os
+            env_ckpt = os.environ.get("R014_SEGMENTER_CHECKPOINT")
+            default_ckpt = (Path(__file__).resolve().parents[2] / "checkpoints/segmenter/seg-unet-resnet34-r014-s42/best_val_iou.pth").resolve()
+            if env_ckpt:
+                resolved_checkpoint = Path(env_ckpt)
+            elif default_ckpt.exists():
+                resolved_checkpoint = default_ckpt
+            else:
+                raise FileNotFoundError("R014 checkpoint not found. Set R014_SEGMENTER_CHECKPOINT or place the checkpoint at checkpoints/segmenter/seg-unet-resnet34-r014-s42/best_val_iou.pth.")
+        
+        if self.segmenter is None or self.segmenter.arch != segmenter_arch or (resolved_checkpoint and self.segmenter.checkpoint_path != Path(resolved_checkpoint)):
+            self.segmenter = SegmentationPredictor(self.config, arch=segmenter_arch, checkpoint_override=resolved_checkpoint)
         resolved_image = image_path.resolve()
         resolved_output_dir = output_dir.resolve()
 
