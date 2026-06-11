@@ -49,7 +49,7 @@ class RestorationPipeline:
     def __init__(self, config: ProjectConfig) -> None:
         self.config = config
         self.inpainter = LamaInpainter(config.lama)
-        self.segmenter = SegmentationPredictor(config)
+        self.segmenter = None # will be lazy initialized if needed
 
     def run(
         self,
@@ -58,7 +58,12 @@ class RestorationPipeline:
         mask_path: Path | None = None,
         face_mode: str = "off",
         golden_reference: Path | None = None,
+        segmenter_arch: str = "r013_custom_attnunet",
+        segmenter_checkpoint: Path | None = None,
+        segmenter_threshold: float | None = None,
     ) -> PipelineResult:
+        if self.segmenter is None:
+            self.segmenter = SegmentationPredictor(self.config, arch=segmenter_arch, checkpoint_override=segmenter_checkpoint)
         resolved_image = image_path.resolve()
         resolved_output_dir = output_dir.resolve()
 
@@ -71,10 +76,16 @@ class RestorationPipeline:
         auto_metadata: dict[str, Any] = {}
 
         if mask_path is None:
+            if segmenter_threshold is not None:
+                th = segmenter_threshold
+            elif segmenter_arch == "r014_resnet34":
+                th = 0.3
+            else:
+                th = float(self.config.checkpoint.threshold_balanced)
             hybrid = build_hybrid_mask(
                 image_path=resolved_image,
                 predictor=self.segmenter,
-                threshold=float(self.config.checkpoint.threshold_balanced),
+                threshold=th,
             )
             dl_mask_path = resolved_output_dir / "dl_mask.png"
             cv_mask_path = resolved_output_dir / "cv_mask.png"

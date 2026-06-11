@@ -31,6 +31,9 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--face-mode", choices=["off", "auto"], default="off")
     parser.add_argument("--reference", type=Path, default=None)
     parser.add_argument("--reference-mask", type=Path, default=None)
+    parser.add_argument("--segmenter-arch", choices=["r013_custom_attnunet", "r014_resnet34"], default="r013_custom_attnunet")
+    parser.add_argument("--segmenter-checkpoint", type=Path, default=None)
+    parser.add_argument("--segmenter-threshold", type=float, default=None)
     return parser
 
 
@@ -123,6 +126,9 @@ def main() -> int:
         mask_path=mask_path,
         face_mode=args.face_mode,
         golden_reference=reference_path,
+        segmenter_arch=args.segmenter_arch,
+        segmenter_checkpoint=args.segmenter_checkpoint,
+        segmenter_threshold=args.segmenter_threshold,
     )
 
     metadata_path = result.output_dir / "metadata.json"

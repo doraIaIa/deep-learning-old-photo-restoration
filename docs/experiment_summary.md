@@ -14,6 +14,7 @@ Dự án này không gộp toàn bộ lịch sử nghiên cứu vào repo. Tài 
 - Đánh giá công bằng (fair test) cho `R013_REPRO @0.50`: IoU/F1 = `0.337970 / 0.501339`.
 - Đánh giá công bằng cho `R011_REPRO @0.55`: IoU/F1 = `0.246848 / 0.394876`.
 - Mức tăng trưởng qua so sánh công bằng: `+0.091122 IoU`, `+0.106463 F1`.
+- *Lưu ý*: Nhánh thực nghiệm `R014` (ResNet-34 encoder) đạt metric segmentation thô cao hơn (IoU ~0.45) nhưng lại làm giảm chất lượng khôi phục pipeline end-to-end (giảm PSNR, tăng MAE). Do đó `R013` vẫn được giữ làm default segmenter do có độ tương thích tốt nhất với LaMa backend.
 
 ## Trạng thái R012
 
@@ -65,6 +66,7 @@ Dự án này không gộp toàn bộ lịch sử nghiên cứu vào repo. Tài 
 | **R011** | Repair mask fine-tune | Real (repair masks) | Test IoU: 0.4478, Test F1: 0.6186 | Stable baseline; missed extremely thin cracks |
 | **R012** | Manual mask constraint | Manual (15 samples) | Test IoU: 0.2846, Test F1: 0.4430 | Overfit/small-data negative experiment |
 | **R013** | Operational segmenter | Fixed 118 pairs | Val F1: 0.5502, Test IoU: 0.3456 (thr 0.50) | Selected operational checkpoint (seg-unet-attn-r013-gen120-fixed118-local) |
+| **R014** | ResNet-34 Kaggle | Real (repair masks) | Test IoU: 0.4506, Test F1: 0.6212 | Better segmentation but degraded pipeline PSNR. Kept as optional. |
 
 ## Quyết định Thiết kế dựa trên Lỗi (Failure-Driven Design Decisions)
 
