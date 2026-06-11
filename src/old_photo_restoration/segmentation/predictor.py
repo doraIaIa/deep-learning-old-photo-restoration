@@ -108,9 +108,14 @@ class SegmentationPredictor:
         probability = self.resize_probability_mask(probability, image_rgb.shape[:2])
         return np.clip(probability, 0.0, 1.0)
 
-    def predict_dl_mask(self, image_path: Path, threshold: float = 0.5) -> np.ndarray:
+    def predict_dl_mask(self, image_path: Path, threshold: float = 0.5, dilation_radius: int = 0) -> np.ndarray:
         probability = self.predict_probability(image_path)
-        return self.binary_mask_from_probability(probability, threshold)
+        binary = self.binary_mask_from_probability(probability, threshold)
+        if dilation_radius > 0:
+            ksize = 2 * dilation_radius + 1
+            kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (ksize, ksize))
+            binary = cv2.dilate(binary, kernel, iterations=1)
+        return binary
 
     @property
     def checkpoint_sha256(self) -> str | None:

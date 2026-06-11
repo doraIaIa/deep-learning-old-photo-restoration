@@ -61,8 +61,9 @@ class RestorationPipeline:
         segmenter_arch: str = "r013_custom_attnunet",
         segmenter_checkpoint: Path | None = None,
         segmenter_threshold: float | None = None,
+        segmenter_dilation: int | None = None,
     ) -> PipelineResult:
-        if self.segmenter is None:
+        if self.segmenter is None or self.segmenter.arch != segmenter_arch or (segmenter_checkpoint and self.segmenter.checkpoint_path != Path(segmenter_checkpoint)):
             self.segmenter = SegmentationPredictor(self.config, arch=segmenter_arch, checkpoint_override=segmenter_checkpoint)
         resolved_image = image_path.resolve()
         resolved_output_dir = output_dir.resolve()
@@ -79,13 +80,22 @@ class RestorationPipeline:
             if segmenter_threshold is not None:
                 th = segmenter_threshold
             elif segmenter_arch == "r014_resnet34":
-                th = 0.3
+                th = 0.30
             else:
                 th = float(self.config.checkpoint.threshold_balanced)
+                
+            if segmenter_dilation is not None:
+                dil = segmenter_dilation
+            elif segmenter_arch == "r014_resnet34":
+                dil = 1
+            else:
+                dil = 0
+                
             hybrid = build_hybrid_mask(
                 image_path=resolved_image,
                 predictor=self.segmenter,
                 threshold=th,
+                dilation_radius=dil,
             )
             dl_mask_path = resolved_output_dir / "dl_mask.png"
             cv_mask_path = resolved_output_dir / "cv_mask.png"
@@ -110,6 +120,8 @@ class RestorationPipeline:
                 "rejected_cv_over_cv_ratio": hybrid["stats"]["rejected_cv_over_cv_ratio"],
                 "cv_profile": "notebook_v7_candidate",
                 "checkpoint_sha256": self.segmenter.checkpoint_sha256,
+                "segmentation_arch": segmenter_arch,
+                "segmentation_dilation": dil,
             }
         else:
             resolved_mask = mask_path.resolve()

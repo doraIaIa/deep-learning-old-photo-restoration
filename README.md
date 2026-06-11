@@ -246,7 +246,7 @@ python scripts/run_pipeline.py \
   --reference-mask examples/golden/demo3_r013_repair_wide/final_mask.png
 ```
 
-*Lưu ý*: Mặc định pipeline sẽ chạy với segmenter `r013_custom_attnunet` (được khuyên dùng do kết quả inpainting tốt nhất). Bạn có thể thử nghiệm với ResNet-34 encoder bằng cách truyền cờ `--segmenter-arch r014_resnet34` (lưu ý model này cho mask mỏng hơn và có thể giảm chất lượng PSNR).
+*Lưu ý*: Mặc định pipeline sẽ chạy với segmenter `r013_custom_attnunet` (được khuyên dùng làm baseline an toàn). Bạn có thể thử nghiệm với ResNet-34 encoder bằng cách truyền cờ `--segmenter-arch r014_resnet34`. R014 ResNet-34 improves segmentation IoU/F1 and, with a 3x3 dilation post-processing policy, becomes a strong candidate for demo restoration. (Yêu cầu biến môi trường `R014_SEGMENTER_CHECKPOINT`).
 
 **Gradio demo**:
 

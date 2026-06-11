@@ -89,6 +89,7 @@ def run_auto_mask_pipeline(
     output_dir_text: str = str(DEFAULT_OUTPUT_DIR),
     mode: str = AUTO_MASK_MODE,
     face_mode: str = "off",
+    segmenter_choice: str = "R013 Custom Attention U-Net",
 ) -> tuple[np.ndarray | None, str | None, str | None, dict[str, Any] | None, str]:
     if image is None:
         return None, None, None, None, "Thiếu ảnh đầu vào."
@@ -107,11 +108,24 @@ def run_auto_mask_pipeline(
         input_path = run_dir / "input.png"
         write_uploaded_image(input_path, image)
 
+        import os
+        
+        segmenter_arch = "r013_custom_attnunet"
+        segmenter_checkpoint = None
+        if "R014" in segmenter_choice:
+            segmenter_arch = "r014_resnet34"
+            env_ckpt = os.environ.get("R014_SEGMENTER_CHECKPOINT")
+            if not env_ckpt or not Path(env_ckpt).exists():
+                return image, None, None, {"error": "Missing checkpoint"}, "R014 checkpoint not found. Set R014_SEGMENTER_CHECKPOINT or provide checkpoint path."
+            segmenter_checkpoint = Path(env_ckpt)
+
         result = pipeline.run(
             image_path=input_path,
             output_dir=run_dir,
             mask_path=None,
             face_mode="off",
+            segmenter_arch=segmenter_arch,
+            segmenter_checkpoint=segmenter_checkpoint,
         )
         metadata = dict(result.metadata)
         metadata["ui_mode"] = mode
@@ -122,7 +136,7 @@ def run_auto_mask_pipeline(
         return image, None, None, {"error": str(exc)}, f"Lỗi readiness/runtime: {exc}"
 
 
-def run_auto_mask_from_path(image_path: Path, output_dir: Path, face_mode: str = "off") -> dict[str, Path]:
+def run_auto_mask_from_path(image_path: Path, output_dir: Path, face_mode: str = "off", segmenter_arch: str = "r013_custom_attnunet", segmenter_checkpoint: Path | None = None) -> dict[str, Path]:
     config = load_runtime_config()
     validate_runtime_readiness(config)
     pipeline = RestorationPipeline(config)
@@ -131,6 +145,8 @@ def run_auto_mask_from_path(image_path: Path, output_dir: Path, face_mode: str =
         output_dir=resolve_path(output_dir),
         mask_path=None,
         face_mode=face_mode,
+        segmenter_arch=segmenter_arch,
+        segmenter_checkpoint=segmenter_checkpoint,
     )
     metadata_path = result.output_dir / "metadata.json"
     if not metadata_path.exists():
@@ -147,7 +163,7 @@ def create_app() -> gr.Blocks:
     with gr.Blocks(title="Old Photo Restoration Demo") as demo:
         gr.Markdown("# Old Photo Restoration Demo")
         gr.Markdown(
-            "Pipeline local hiện tại chạy auto-mask: r013 segmentation + CV mask + union + repair_wide_v1 + official LaMa."
+            "Pipeline local hiện tại chạy auto-mask. Hỗ trợ segmenter R013 (default) và R014 (optional)."
         )
         with gr.Row():
             with gr.Column(scale=1):
@@ -164,6 +180,12 @@ def create_app() -> gr.Blocks:
                     value="off",
                     interactive=False,
                 )
+                segmenter_choice = gr.Dropdown(
+                    label="Segmenter",
+                    choices=["R013 Custom Attention U-Net", "R014 ResNet-34 (3x3 Dilation)"],
+                    value="R013 Custom Attention U-Net",
+                    interactive=True,
+                )
                 output_dir = gr.Textbox(
                     label="Output directory",
                     value=str(DEFAULT_OUTPUT_DIR),
@@ -178,7 +200,7 @@ def create_app() -> gr.Blocks:
 
         run_button.click(
             run_auto_mask_pipeline,
-            inputs=[input_image, output_dir, mode, face_mode],
+            inputs=[input_image, output_dir, mode, face_mode, segmenter_choice],
             outputs=[input_preview, final_mask, restored_before_face, metadata, status],
         )
     demo.queue(default_concurrency_limit=1)

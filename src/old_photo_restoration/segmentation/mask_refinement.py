@@ -190,9 +190,10 @@ def build_hybrid_mask(
     image_path: Path,
     predictor: SegmentationPredictor,
     threshold: float = 0.5,
+    dilation_radius: int = 0,
 ) -> dict[str, Any]:
     image_rgb = predictor.read_image_rgb(image_path)
-    dl_mask = predictor.predict_dl_mask(image_path, threshold=threshold)
+    dl_mask = predictor.predict_dl_mask(image_path, threshold=threshold, dilation_radius=dilation_radius)
     cv_mask, cv_info, cv_debug_images = build_cv_crack_mask(image_rgb, profile="notebook_v7_candidate")
     union_mask = union_masks(dl_mask, cv_mask)
     final_mask = refine_mask_repair_wide(union_mask)
