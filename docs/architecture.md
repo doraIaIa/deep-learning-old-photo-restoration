@@ -11,7 +11,7 @@ The repository is organized around configuration, segmentation, inpainting, face
 
 ## Module 1: Crack Segmentation
 
-- **Model Family**: Attention U-Net. Module 1 sử dụng Attention U-Net với encoder backbone ResNet-34 pretrained trên ImageNet. ResNet-34 đóng vai trò trích xuất đặc trưng trong nhánh encoder, còn U-Net là kiến trúc segmentation tổng thể gồm encoder, bottleneck, decoder và skip connections. The architecture incorporates Attention Gates to filter skip connections and focus the decoder on relevant crack-like regions while suppressing background noise.
+- **Model Family**: Attention U-Net. Blueprint considered a ResNet-34 encoder, while the final R013 implementation uses a custom Attention U-Net encoder without ResNet. The architecture incorporates Attention Gates to filter skip connections and focus the decoder on relevant crack-like regions while suppressing background noise.
 - **Input/Output**: Expects an RGB image and outputs a probability/binary mask representing defect locations.
 - **Loss Strategy History**: The training sequence experimented with varying losses. Early iterations used BCE+Dice. Later iterations (starting R008) introduced Tversky-style loss (e.g., alpha=0.3, beta=0.7) and increased recall penalties (beta=0.8 in R011) to capture faint scratches.
 - **Threshold Calibration**: Operational thresholds were historically calibrated based on validation distributions, finalizing at 0.50 for the current R013 model.

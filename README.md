@@ -74,7 +74,7 @@ Kiến trúc pipeline ưu tiên tính minh bạch bằng cách xuất ra các k�
 
 ## 3. Điểm nổi bật của repo
 
-- **Phân vùng vùng hư hại**: Module 1 sử dụng Attention U-Net với encoder backbone ResNet-34 pretrained trên ImageNet. ResNet-34 đóng vai trò trích xuất đặc trưng trong nhánh encoder, còn U-Net là kiến trúc segmentation tổng thể gồm encoder, bottleneck, decoder và skip connections. Nó kết hợp Attention Gate (`CrackSegmenter`) để tập trung feature vào vùng hư hỏng, bỏ qua background nhiễu.
+- **Phân vùng vùng hư hại**: Blueprint considered a ResNet-34 encoder, while the final R013 implementation uses a custom Attention U-Net encoder without ResNet. Nó kết hợp Attention Gate (`CrackSegmenter`) để tập trung feature vào vùng hư hỏng, bỏ qua background nhiễu.
 - **Tinh chỉnh mặt nạ lai**: Kết hợp dự đoán của Deep Learning với phương pháp Classical CV để tránh bỏ sót các nét nứt mảnh, tạo ra mặt nạ phân vùng (segmentation mask) phù hợp hơn cho bước inpainting.
 - **Điền khuyết ảnh**: Gọi LaMa thông qua external inpainting backend để tái tạo hình ảnh từ mask một cách tự nhiên.
 - **Tập trung quan sát**: Mọi khâu đều lưu lại các file trung gian (`dl_mask.png`, `cv_mask.png`, `union_before_refine.png`, `final_mask.png`), phục vụ việc chẩn đoán lỗi dễ dàng.
