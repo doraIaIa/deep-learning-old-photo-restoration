@@ -34,6 +34,12 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--config", type=Path, default=Path("configs/inference.yaml"))
     parser.add_argument("--checkpoint-config", type=Path, default=Path("configs/checkpoints.yaml"))
     parser.add_argument("--external-config", type=Path, default=Path("configs/external_paths.yaml"))
+    parser.add_argument("--post-inpainting", action="store_true")
+    parser.add_argument(
+        "--color-restoration-config",
+        type=Path,
+        default=Path("configs/color_restoration.yaml"),
+    )
     parser.add_argument("--strict", action="store_true")
     return parser
 
@@ -139,6 +145,49 @@ def check_codeformer(config: ProjectConfig, results: list[CheckItem]) -> None:
         add_result(results, "OPTIONAL", f"CodeFormer weights are not available: {codeformer.checkpoint}")
 
 
+def check_color_restoration(args: argparse.Namespace, results: list[CheckItem]) -> None:
+    try:
+        from old_photo_restoration.color_restoration import load_color_restoration_config
+
+        color_config = load_color_restoration_config(resolve_path(args.color_restoration_config))
+    except Exception as exc:
+        add_result(results, "FAIL", f"Color-restoration config failed: {exc}", core_ok=False)
+        return
+
+    add_result(results, "OK", f"Loaded color-restoration config: {resolve_path(args.color_restoration_config)}")
+    if color_config.method != "model":
+        add_result(results, "OK", f"Color-restoration method does not require a checkpoint: {color_config.method}")
+        return
+
+    try:
+        import kornia  # noqa: F401
+    except Exception as exc:
+        add_result(results, "FAIL", f"Could not import kornia: {exc}", core_ok=False)
+        return
+    add_result(results, "OK", "Imported kornia successfully")
+
+    checkpoint_value = color_config.model.checkpoint_path
+    if not checkpoint_value:
+        add_result(results, "MISSING", "Color-restoration checkpoint path is not configured", core_ok=False)
+        return
+    checkpoint_path = Path(checkpoint_value)
+    checkpoint_path = checkpoint_path if checkpoint_path.is_absolute() else resolve_path(checkpoint_path)
+    if not checkpoint_path.is_file():
+        add_result(results, "MISSING", f"Missing color-restoration checkpoint: {checkpoint_path}", core_ok=False)
+        return
+    actual_sha256 = sha256_file(checkpoint_path).lower()
+    expected_sha256 = (color_config.model.expected_sha256 or "").lower()
+    if expected_sha256 and actual_sha256 != expected_sha256:
+        add_result(
+            results,
+            "FAIL",
+            f"Color-restoration checkpoint SHA256 mismatch. expected={expected_sha256}, actual={actual_sha256}",
+            core_ok=False,
+        )
+        return
+    add_result(results, "OK", f"Color-restoration checkpoint is ready: {checkpoint_path}")
+
+
 def main() -> int:
     args = build_parser().parse_args()
     results: list[CheckItem] = []
@@ -150,6 +199,8 @@ def main() -> int:
         check_segmentation_checkpoint(config, results)
         check_lama(config, results)
         check_codeformer(config, results)
+    if args.post_inpainting:
+        check_color_restoration(args, results)
 
     for item in results:
         print(f"[{item.level}] {item.message}")

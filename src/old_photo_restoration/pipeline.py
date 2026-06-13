@@ -11,8 +11,10 @@ import numpy as np
 
 from old_photo_restoration.config import ProjectConfig
 from old_photo_restoration.inpainting.lama_wrapper import LamaInpainter
+from old_photo_restoration.postprocessing import PostInpaintingProcessor
 from old_photo_restoration.segmentation.mask_refinement import build_hybrid_mask
 from old_photo_restoration.segmentation.predictor import SegmentationPredictor
+from old_photo_restoration.utils.run_logging import configure_run_logger
 
 
 def _read_mask(path: Path) -> np.ndarray:
@@ -62,6 +64,8 @@ class RestorationPipeline:
         segmenter_checkpoint: Path | None = None,
         segmenter_threshold: float | None = None,
         segmenter_dilation: int | None = None,
+        post_inpainting_enabled: bool = False,
+        color_restoration_config_path: Path | None = None,
     ) -> PipelineResult:
         resolved_checkpoint = segmenter_checkpoint
         if segmenter_arch == "r014_resnet34" and not resolved_checkpoint:
@@ -82,9 +86,10 @@ class RestorationPipeline:
 
         if not resolved_image.exists():
             raise FileNotFoundError(f"Input image was not found: {resolved_image}")
-        if face_mode != "off":
-            raise NotImplementedError("CodeFormer is an optional dependency and is currently unavailable. Use --face-mode off.")
+        if face_mode != "off" and not post_inpainting_enabled:
+            raise ValueError("face_mode requires post_inpainting_enabled=True.")
         resolved_output_dir.mkdir(parents=True, exist_ok=True)
+        logger = configure_run_logger(resolved_output_dir)
         final_mask_path = resolved_output_dir / "final_mask.png"
         auto_metadata: dict[str, Any] = {}
 
@@ -142,13 +147,55 @@ class RestorationPipeline:
             final_mask = _read_mask(resolved_mask)
             _write_mask(final_mask_path, final_mask)
 
+        inpainting_output_dir = resolved_output_dir / "inpainting"
+        inpainting_output_dir.mkdir(parents=True, exist_ok=True)
         lama_output = self.inpainter.inpaint(
             image_path=resolved_image,
             mask_path=final_mask_path,
-            output_dir=resolved_output_dir,
+            output_dir=inpainting_output_dir,
         )
+        inpainting_lama_path = inpainting_output_dir / "lama_restored.png"
+        if Path(lama_output).resolve() != inpainting_lama_path.resolve():
+            shutil.copy2(lama_output, inpainting_lama_path)
+        lama_restored_path = resolved_output_dir / "lama_restored.png"
+        shutil.copy2(inpainting_lama_path, lama_restored_path)
         restored_path = resolved_output_dir / "restored_before_face.png"
-        shutil.copy2(lama_output, restored_path)
+        shutil.copy2(lama_restored_path, restored_path)
+
+        post_inpainting_metadata: dict[str, Any] = {
+            "enabled": False,
+            "status": "skipped",
+            "reason": "disabled",
+            "input_stage": "lama_restored",
+            "output_stage": "restored_before_face",
+            "artifacts": {
+                "inpainting_dir": str(inpainting_output_dir),
+                "lama_restored": str(inpainting_lama_path),
+                "lama_restored_alias": str(lama_restored_path),
+                "restored_before_face": str(restored_path),
+            },
+        }
+        face_restoration_applied = False
+        if post_inpainting_enabled:
+            post_result = PostInpaintingProcessor(self.config, logger).run(
+                inpainting_lama_path,
+                resolved_output_dir,
+                color_restoration_config_path=color_restoration_config_path,
+                face_mode=face_mode,
+            )
+            restored_path = post_result.final_path
+            face_restoration_applied = (
+                post_result.metadata["modules"]["face_restoration"].get("status") == "applied"
+            )
+            post_inpainting_metadata = {
+                **post_result.metadata,
+                "artifacts": {
+                    "inpainting_dir": str(inpainting_output_dir),
+                    "lama_restored": str(inpainting_lama_path),
+                    "lama_restored_alias": str(lama_restored_path),
+                    **post_result.metadata["artifacts"],
+                },
+            }
 
         last_result = self.inpainter.last_result or {}
         metadata: dict[str, Any] = {
@@ -160,8 +207,9 @@ class RestorationPipeline:
             "mask_source": "external_mask" if mask_path is not None else "union",
             "segmentation_enabled": mask_path is None,
             "inpainting_backend": "official_lama",
-            "face_restoration_enabled": False,
+            "face_restoration_enabled": face_restoration_applied,
             "face_mode": face_mode,
+            "post_inpainting": post_inpainting_metadata,
             "config_mode": self.config.inference.mode,
             "config_mask_source": self.config.inference.mask_source,
             "config_mask_refine": self.config.inference.mask_refine,

@@ -8,6 +8,7 @@ __pycache__/
 .venv/
 venv/
 env/
+migration_color_restoration_after_lama/
 examples/checkpoints/
 !checkpoints/
 checkpoints/*

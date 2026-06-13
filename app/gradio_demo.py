@@ -52,7 +52,10 @@ def load_runtime_config() -> ProjectConfig:
     )
 
 
-def validate_runtime_readiness(config: ProjectConfig) -> None:
+def validate_runtime_readiness(
+    config: ProjectConfig,
+    post_inpainting_enabled: bool = False,
+) -> None:
     predictor = SegmentationPredictor(config)
     predictor.verify_checkpoint()
 
@@ -68,6 +71,23 @@ def validate_runtime_readiness(config: ProjectConfig) -> None:
             "LaMa chưa sẵn sàng để chạy local demo. "
             f"reason={lama_readiness.get('reason')}"
         )
+    if post_inpainting_enabled:
+        from old_photo_restoration.color_restoration import load_color_restoration_config
+
+        color_config = load_color_restoration_config(resolve_path("configs/color_restoration.yaml"))
+        if color_config.method == "model":
+            checkpoint_path = Path(str(color_config.model.checkpoint_path))
+            checkpoint_path = (
+                checkpoint_path
+                if checkpoint_path.is_absolute()
+                else resolve_path(checkpoint_path)
+            )
+            if not checkpoint_path.is_file():
+                raise RuntimeError(f"Thiếu color-restoration checkpoint: {checkpoint_path}")
+            try:
+                import kornia  # noqa: F401
+            except ImportError as exc:
+                raise RuntimeError("Color-restoration model yêu cầu dependency kornia.") from exc
 
 
 def build_status_text(output_dir: Path, metadata: dict[str, Any]) -> str:
@@ -80,6 +100,8 @@ def build_status_text(output_dir: Path, metadata: dict[str, Any]) -> str:
         f"mask_refine: {metadata.get('mask_refine', '')}",
         f"final_mask_ratio: {metadata.get('final_mask_ratio', '')}",
         f"inpainting_backend: {metadata.get('inpainting_backend', '')}",
+        f"post_inpainting_enabled: {metadata.get('post_inpainting', {}).get('enabled', False)}",
+        f"face_restoration_enabled: {metadata.get('face_restoration_enabled', False)}",
     ]
     return "\n".join(lines)
 
@@ -90,17 +112,18 @@ def run_auto_mask_pipeline(
     mode: str = AUTO_MASK_MODE,
     face_mode: str = "off",
     segmenter_choice: str = "R013 Custom Attention U-Net",
+    post_inpainting_enabled: bool = False,
 ) -> tuple[np.ndarray | None, str | None, str | None, dict[str, Any] | None, str]:
     if image is None:
         return None, None, None, None, "Thiếu ảnh đầu vào."
     if mode != AUTO_MASK_MODE:
         return image, None, None, None, f"Mode không hỗ trợ trong phase hiện tại: {mode}"
-    if face_mode != "off":
-        return image, None, None, None, "Phase hiện tại chỉ hỗ trợ face_mode=off."
+    if face_mode != "off" and not post_inpainting_enabled:
+        return image, None, None, None, "face_mode=auto yêu cầu bật post-inpainting."
 
     try:
         config = load_runtime_config()
-        validate_runtime_readiness(config)
+        validate_runtime_readiness(config, post_inpainting_enabled=post_inpainting_enabled)
         pipeline = RestorationPipeline(config)
 
         base_output_dir = resolve_path(output_dir_text or str(DEFAULT_OUTPUT_DIR))
@@ -119,9 +142,10 @@ def run_auto_mask_pipeline(
             image_path=input_path,
             output_dir=run_dir,
             mask_path=None,
-            face_mode="off",
+            face_mode=face_mode,
             segmenter_arch=segmenter_arch,
             segmenter_checkpoint=segmenter_checkpoint,
+            post_inpainting_enabled=post_inpainting_enabled,
         )
         metadata = dict(result.metadata)
         metadata["ui_mode"] = mode
@@ -132,9 +156,16 @@ def run_auto_mask_pipeline(
         return image, None, None, {"error": str(exc)}, f"Lỗi readiness/runtime: {exc}"
 
 
-def run_auto_mask_from_path(image_path: Path, output_dir: Path, face_mode: str = "off", segmenter_arch: str = "r013_custom_attnunet", segmenter_checkpoint: Path | None = None) -> dict[str, Path]:
+def run_auto_mask_from_path(
+    image_path: Path,
+    output_dir: Path,
+    face_mode: str = "off",
+    segmenter_arch: str = "r013_custom_attnunet",
+    segmenter_checkpoint: Path | None = None,
+    post_inpainting_enabled: bool = False,
+) -> dict[str, Path]:
     config = load_runtime_config()
-    validate_runtime_readiness(config)
+    validate_runtime_readiness(config, post_inpainting_enabled=post_inpainting_enabled)
     pipeline = RestorationPipeline(config)
     result = pipeline.run(
         image_path=resolve_path(image_path),
@@ -143,6 +174,7 @@ def run_auto_mask_from_path(image_path: Path, output_dir: Path, face_mode: str =
         face_mode=face_mode,
         segmenter_arch=segmenter_arch,
         segmenter_checkpoint=segmenter_checkpoint,
+        post_inpainting_enabled=post_inpainting_enabled,
     )
     metadata_path = result.output_dir / "metadata.json"
     if not metadata_path.exists():
@@ -170,11 +202,15 @@ def create_app() -> gr.Blocks:
                     value=AUTO_MASK_MODE,
                     interactive=False,
                 )
+                post_inpainting_enabled = gr.Checkbox(
+                    label="Post-inpainting color restoration",
+                    value=False,
+                )
                 face_mode = gr.Dropdown(
                     label="Face mode",
-                    choices=["off"],
+                    choices=["off", "auto"],
                     value="off",
-                    interactive=False,
+                    interactive=True,
                 )
                 segmenter_choice = gr.Dropdown(
                     label="Segmenter",
@@ -190,13 +226,20 @@ def create_app() -> gr.Blocks:
             with gr.Column(scale=1):
                 input_preview = gr.Image(label="Input preview", type="numpy")
                 final_mask = gr.Image(label="Final mask", type="filepath")
-                restored_before_face = gr.Image(label="Restored before face", type="filepath")
+                restored_before_face = gr.Image(label="Final restored output", type="filepath")
         metadata = gr.JSON(label="Metadata")
         status = gr.Textbox(label="Status", lines=8)
 
         run_button.click(
             run_auto_mask_pipeline,
-            inputs=[input_image, output_dir, mode, face_mode, segmenter_choice],
+            inputs=[
+                input_image,
+                output_dir,
+                mode,
+                face_mode,
+                segmenter_choice,
+                post_inpainting_enabled,
+            ],
             outputs=[input_preview, final_mask, restored_before_face, metadata, status],
         )
     demo.queue(default_concurrency_limit=1)
