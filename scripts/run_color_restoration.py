@@ -29,9 +29,6 @@ def parse_args() -> argparse.Namespace:
         choices=["model", "opencv_conservative", "opencv_neutral_fallback"],
         default=None,
     )
-    parser.add_argument("--codeformer-repo", type=Path, default=None)
-    parser.add_argument("--codeformer-env", default=None)
-    parser.add_argument("--disable-codeformer", action="store_true")
     parser.add_argument(
         "--final-color-method",
         choices=["ccm", "lab_chroma_match", "ccm_then_chroma_match"],
@@ -65,18 +62,6 @@ def main() -> int:
             device=args.device or config.model.device,
         )
         config = replace(config, model=model_config)
-    if args.codeformer_repo is not None or args.codeformer_env is not None or args.disable_codeformer:
-        codeformer_config = replace(
-            config.codeformer,
-            enabled=not args.disable_codeformer,
-            repo_path=(
-                str(args.codeformer_repo)
-                if args.codeformer_repo is not None
-                else config.codeformer.repo_path
-            ),
-            env_name=args.codeformer_env or config.codeformer.env_name,
-        )
-        config = replace(config, codeformer=codeformer_config)
     if args.final_color_method is not None:
         config = replace(
             config,

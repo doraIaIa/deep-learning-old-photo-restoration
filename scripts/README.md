@@ -1,27 +1,32 @@
 # Scripts
 
-This directory contains the public utility commands used to prepare data manifests, run the restoration pipeline, launch the demo, evaluate segmentation, verify artifacts, and reproduce the documented training/evaluation workflow.
+Thư mục này chứa các lệnh công khai để chuẩn bị dữ liệu, huấn luyện, đánh giá,
+chạy inference và kiểm tra artifact. Chạy các lệnh từ thư mục gốc của repository.
 
-The scripts are intentionally kept at the top level of this directory so they can be invoked consistently from the repository root.
+## Pipeline và demo
 
-## Main commands
+- `run_pipeline.py`: chạy toàn bộ pipeline phục hồi ảnh cũ.
+- `run_color_restoration.py`: chạy riêng module phục hồi màu sau LaMa.
+- `run_gradio_demo.py`: khởi chạy giao diện Gradio.
+- `run_ablation.py`: chạy hoặc kiểm tra các cấu hình ablation.
+- `eval_pipeline_paired.py`: đánh giá pipeline trên dữ liệu paired.
 
-- 
-un_pipeline.py: runs the restoration pipeline on an input image using the configured segmenter, mask refinement, and inpainting backend.
-- 
-un_gradio_demo.py: launches the Gradio demo wrapper.
-- check_readiness.py: checks whether required local artifacts and configuration entries are available.
-- erify_artifacts.py: validates expected artifact metadata and local checkpoint availability.
-- download_checkpoints.py: documents or assists external checkpoint retrieval where applicable.
-- uild_dataset.py: prepares or validates dataset metadata according to the manifest-driven layout.
-- 	rain_segmentation.py: training entrypoint for the segmentation model.
-- 	rain_r013_finetune.py: R013-specific fine-tuning/reproduction entrypoint.
-- evaluate_segmentation.py: segmentation evaluation utility.
-- 
-un_ablation.py: ablation/status utility for documented experiment variants.
-- uild_demo_assets.py: prepares demo assets used by documentation.
-- smoke_lama_inpainting.py: smoke test for the LaMa inpainting wrapper.
+## Dữ liệu và huấn luyện
 
-## Notes
+- `build_dataset.py`: chuẩn bị hoặc kiểm tra dataset theo manifest.
+- `train_segmentation.py`: huấn luyện model phân đoạn vết nứt.
+- `train_r013_finetune.py`: fine-tune model phân đoạn theo cấu hình R013.
+- `evaluate_segmentation.py`: đánh giá model phân đoạn.
 
-Checkpoint binaries, datasets, generated outputs, and local machine paths are not committed to Git. The repository tracks scripts, manifests, README files, and directory structure needed to reproduce or inspect the project workflow.
+## Kiểm tra và tiện ích
+
+- `check_readiness.py`: kiểm tra config và artifact local cần thiết.
+- `verify_artifacts.py`: xác thực metadata và checkpoint.
+- `download_checkpoints.py`: hỗ trợ tải checkpoint bên ngoài.
+- `build_demo_assets.py`: tạo asset dùng cho demo và tài liệu.
+- `smoke_lama_inpainting.py`: smoke test LaMa.
+- `smoke_r014_segmenter.py`: smoke test segmenter R014.
+
+Checkpoint, dataset, ảnh inference và output sinh ra trong runtime không được
+commit lên Git. Repository chỉ theo dõi source code, config, manifest và tài liệu
+cần để tái lập quy trình.

@@ -5,10 +5,21 @@ __pycache__/
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
+.gitnexus/
+.claude/
+.ipynb_checkpoints/
+.jupyter/
+.jupyter_ystore.db
+anaconda_projects/
+AGENTS.md
+CLAUDE.md
+Untitled*.ipynb
+.DS_Store
+Thumbs.db
+desktop.ini
 .venv/
 venv/
 env/
-migration_color_restoration_after_lama/
 examples/checkpoints/
 !checkpoints/
 checkpoints/*
@@ -33,6 +44,8 @@ checkpoints/segmenter/r009_synthetic_pretrain/*
 configs/external_paths.yaml
 examples/outputs/*
 !examples/outputs/.gitkeep
+inference_inputs/*
+!inference_inputs/.gitkeep
 
 # Generated outputs are ignored by default.
 outputs/*
