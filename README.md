@@ -86,50 +86,76 @@ Pipeline cốt lõi phát hiện vùng hư hại, tạo repair mask và dùng pr
 ## Kiến trúc pipeline
 
 ```text
-Ảnh cũ RGB
-    |
-    v
-Damage Segmentation
-    |-- R013 Custom Attention U-Net (mặc định)
-    |-- R014 ResNet-34 Attention U-Net (thử nghiệm)
-    |
-    +--> dl_mask.png
-    |
-    v
-Classical CV Crack Detection
-    |-- CLAHE
-    |-- Blackhat / Canny / morphology
-    |-- component filtering
-    |
-    +--> cv_mask.png
-    |
-    v
-Hybrid Union Mask + repair_wide_v1
-    |
-    +--> union_before_refine.png
-    +--> final_mask.png
-    |
-    v
-Official Pretrained LaMa Wrapper
-    |
-    +--> inpainting/lama_restored.png
-    |
-    +-------------------- Core pipeline kết thúc tại đây
-    |
-    v
-PostInpaintingProcessor                       [tùy chọn]
-    |
-    +--> Color Restoration
-    |      |-- quality restoration
-    |      |-- Color Restoration U-Net
-    |      |-- inference control
-    |      |-- CCM color correction
-    |      +-- safety post-processing
-    |
-    +--> Face Restoration / CodeFormer         [tùy chọn]
-    |
-    v
-final/restored.png + metadata.json + pipeline.log
+┌──────────────────────────────────────────────────────────────┐
+│                         ẢNH CŨ RGB                           │
+└──────────────────────────────┬───────────────────────────────┘
+                               │
+                               ▼
+┌──────────────────────────────────────────────────────────────┐
+│ DAMAGE SEGMENTATION                                          │
+│                                                              │
+│ • R013 Custom Attention U-Net: mặc định                      │
+│ • R014 ResNet-34 Attention U-Net: thử nghiệm                 │
+│                                                              │
+│ Output: dl_mask.png                                          │
+└──────────────────────────────┬───────────────────────────────┘
+                               │
+                               ▼
+┌──────────────────────────────────────────────────────────────┐
+│ CLASSICAL CV CRACK DETECTION                                 │
+│                                                              │
+│ • CLAHE                                                      │
+│ • Blackhat / Canny / morphology                             │
+│ • Component filtering                                       │
+│                                                              │
+│ Output: cv_mask.png                                          │
+└──────────────────────────────┬───────────────────────────────┘
+                               │
+                               ▼
+┌──────────────────────────────────────────────────────────────┐
+│ HYBRID UNION MASK + REPAIR_WIDE_V1                           │
+│                                                              │
+│ Outputs:                                                     │
+│ • union_before_refine.png                                    │
+│ • final_mask.png                                             │
+└──────────────────────────────┬───────────────────────────────┘
+                               │
+                               ▼
+┌──────────────────────────────────────────────────────────────┐
+│ OFFICIAL PRETRAINED LAMA WRAPPER                             │
+│                                                              │
+│ Output: inpainting/lama_restored.png                         │
+└──────────────────────────────┬───────────────────────────────┘
+                               │
+              CORE PIPELINE KẾT THÚC TẠI ĐÂY
+                               │
+                               ▼
+┌──────────────────────────────────────────────────────────────┐
+│ POST-INPAINTING PROCESSOR                         [TÙY CHỌN] │
+│                                                              │
+│ ┌──────────────────────────────────────────────────────────┐ │
+│ │ COLOR RESTORATION                                        │ │
+│ │                                                          │ │
+│ │ • Quality restoration                                    │ │
+│ │ • Color Restoration U-Net                                │ │
+│ │ • Inference control                                      │ │
+│ │ • CCM color correction                                   │ │
+│ │ • Safety post-processing                                 │ │
+│ └──────────────────────────────────────────────────────────┘ │
+│                                                              │
+│ ┌──────────────────────────────────────────────────────────┐ │
+│ │ FACE RESTORATION / CODEFORMER                 [TÙY CHỌN] │ │
+│ └──────────────────────────────────────────────────────────┘ │
+└──────────────────────────────┬───────────────────────────────┘
+                               │
+                               ▼
+┌──────────────────────────────────────────────────────────────┐
+│ OUTPUTS                                                      │
+│                                                              │
+│ • final/restored.png                                         │
+│ • metadata.json                                              │
+│ • pipeline.log                                               │
+└──────────────────────────────────────────────────────────────┘
 ```
 
 ### Damage Segmentation
@@ -168,7 +194,7 @@ lama_restored
 → color_restored
 ```
 
-Module này tập trung vào phục hồi chất lượng và hiệu chỉnh màu một cách có kiểm soát. Không nên diễn giải module như một hệ thống automatic colorization hoàn chỉnh cho mọi ảnh đen trắng.
+Module này tập trung vào phục hồi chất lượng và hiệu chỉnh màu một cách có kiểm soát.
 
 Các intermediate được lưu mặc định:
 
